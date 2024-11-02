@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include 'dbConnect.php';
 
 // SQL query to fetch all patients along with their last visit date

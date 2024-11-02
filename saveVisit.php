@@ -1,11 +1,5 @@
 <?php
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php'); // Redirect to login page
-    exit;
-}
+include 'auth.php';
 
 include 'dbConnect.php'; // Include your database connection
 
@@ -58,12 +52,12 @@ if ($xray_taken && isset($_FILES['xray_file']) && $_FILES['xray_file']['error'][
 $xray_file_path_str = implode(',', $xray_file_paths);
 
 // Prepare the SQL query with the new test result fields for the visits table
-$query = "INSERT INTO visits (patient_id, visit_date, treatment, medicines, fees, xray_taken, xray_details, treatment_options, xray_file, s_uric_acid, calcium, esr, cholesterol) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$query = "INSERT INTO visits (patient_id, visit_date, treatment, medicines, fees, xray_taken, xray_details, treatment_options, s_uric_acid, calcium, esr, cholesterol) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 // Prepare and execute the statement for visits table
 $stmt = $conn->prepare($query);
-$stmt->bind_param("isssdisssssss", $patient_id, $visit_date, $treatment, $medicines, $fees, $xray_taken, $xray_details, $treatment_options, $xray_file_path_str, $s_uric_acid, $calcium, $esr, $cholesterol);
+$stmt->bind_param("isssdissssss", $patient_id, $visit_date, $treatment, $medicines, $fees, $xray_taken, $xray_details, $treatment_options, $s_uric_acid, $calcium, $esr, $cholesterol);
 
 if ($stmt->execute()) {
     // Get the last inserted visit ID

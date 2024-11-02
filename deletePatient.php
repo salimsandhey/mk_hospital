@@ -1,22 +1,23 @@
 <?php
-    include "dbConnect.php";
+include 'auth.php';
+include "dbConnect.php";
 
-    if (isset($_GET['id'])) {
-        $id = $_GET['id'];
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
 
-        $sql = "DELETE FROM patient WHERE id = $id";
+    $sql = "DELETE FROM patient WHERE id = $id";
 
-        // Execute the query
-        if (mysqli_query($conn, $sql)) {
-            echo "Record deleted successfully";
-        } else {
-            echo "Error deleting record: " . mysqli_error($conn);
-        }
-        header("Location: patients.php");
-
-        exit();
+    // Execute the query
+    if (mysqli_query($conn, $sql)) {
+        echo "Record deleted successfully";
     } else {
-        echo "Invalid request";
+        echo "Error deleting record: " . mysqli_error($conn);
     }
+    header("Location: patients.php");
+
+    exit();
+} else {
+    echo "Invalid request";
+}
 
 ?>

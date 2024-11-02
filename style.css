@@ -1,6 +1,6 @@
-.all-patients-table {
-    margin-top: 4rem;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 
 .head {
     background-color: color;
@@ -28,7 +28,242 @@
     --hover-background: #F0F4FF;
 }
 
-.demo-heading{
+.demo-heading {
     background-color: var(--primary-color);
     color: white;
+}
+
+.dash-item {
+    background-color: white;
+    height: 170px;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.index-body {
+    background-color: #f8f9fb;
+}
+
+.green {
+    color: green;
+    font-weight: bold;
+}
+
+.welcome {
+    background-color: white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    height: 110px;
+    padding: 10px;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.container-fix {
+    margin-left: 60px;
+    margin-right: 60px;
+}
+
+.d-name {
+    color: #2E37A4;
+}
+
+.index-patients {
+    background-color: white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.custom-btn {
+    background-color: #2E37A4;
+    color: white;
+}
+
+.custom-btn:hover {
+    border: 1px solid black;
+}
+
+.show-all {
+    color: #2E37A4;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.primary-color {
+    color: #2E37A4;
+}
+
+body {
+    background-color: #f8f9fb !important;
+    font-family: "Poppins", sans-serif !important;
+}
+
+.all-patients-table {
+    border-radius: 20px !important;
+    color: #2b2d3b;
+}
+
+.all-patients-table td,
+.all-patients-table th {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    font-size: 15px;
+}
+
+.table-top {
+    padding: 220px !important;
+}
+
+.patients-container {
+    background-color: white;
+    padding: 30px;
+}
+
+.patients-search {
+    display: flex;
+}
+
+.add-btn {
+    background-color: rgba(46, 55, 164, 0.05);
+    color: #2E37A4;
+    border-radius: 10px;
+    height: 48px;
+    width: 48px;
+    text-align: center;
+    padding-top: 12px;
+}
+
+.add-btn i {
+    font-size: 18px;
+
+}
+
+.search-input {
+    background-color: rgba(46, 55, 164, 0.05) !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    border-radius: 10px !important;
+    border: none !important;
+}
+
+.search-bar i {
+    color: #2E37A4;
+}
+
+.bold {
+    font-weight: 600;
+}
+
+.profile-head {
+    background-color: rgba(46, 55, 164, 0.05);
+    padding: 15px;
+}
+
+.profile-box {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border: none !important;
+}
+
+.edit-btn {
+    color: #2E37A4;
+    background-color: none;
+}
+
+.delete-btn {
+    background-color: #ffffff00 !important;
+    color: red;
+    border: none !important;
+    text-decoration: underline;
+}
+
+.visit-btn {
+    background-color: #2E37A4;
+    color: white;
+    padding: 5px 10px 5px 10px;
+    /* width: 70px; */
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.table-head {
+    background-color: rgba(46, 55, 164, 0.05) !important;
+}
+
+.visit-card {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.visit-card-head {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.visit-personal {
+    height: 100px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #2e38a4;
+    color: white;
+}
+
+.container-group {
+    /* background-color: white; */
+    /* padding: 20px   ; */
+}
+
+.test-cell {
+    margin-right: 20px;
+}
+
+.treat-cell {
+    text-decoration: none;
+    background-color: #2E37A4;
+    width: fit-content;
+    border-radius: 20px;
+    padding: 5px 10px 5px 10px;
+    color: white;
+    margin-right: 10px;
+    list-style-type: none;
+    font-size: 14px;
+}
+@media (max-width: 576px) {
+    .container-fix{
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .patients-container{
+        padding: 10px;
+    }
+    .hide{
+        display: none;
+    }
+    .all-patients-table td,
+    .all-patients-table th {
+        padding: 8px !important;
+    }
+    .patients-search{
+        display: block;
+    }
+}
+.index-patients .add-btn {
+    background-color: rgba(46, 55, 164, 0.05);
+    color: #2E37A4;
+    border-radius: 10px;
+    height: 35px;
+    width: 35px;
+    text-align: center;
+    padding-top: 7px;
+    display: inline-block;
+}
+.form-check-input:checked{
+    background-color: #2E37A4;
+    border-color: #2E37A4;;
 }

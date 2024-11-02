@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include "dbConnect.php";
 
 // Get form data

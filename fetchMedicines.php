@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include "dbConnect.php"; // Include your database connection
 
 if (isset($_POST['search'])) {

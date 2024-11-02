@@ -64,7 +64,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
         <div class="container-fluid">
             <!-- Logo/Brand -->
-            <a class="navbar-brand" href="index.php">MK Hospital</a>
+            <a class="navbar-brand" href="index.php">Flipoo</a>
 
             <!-- Toggle button for mobile view -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -92,7 +92,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <!-- Add New Patient Button -->
                     <li class="nav-item">
-                        <a class="btn btn-primary ms-2" href="newRecord.php">Add New Patient</a>
+                        <a class="btn custom-btn ms-2" href="newRecord.php">Add New Patient</a>
                     </li>
 
                     <!-- Profile Dropdown -->

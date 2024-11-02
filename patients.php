@@ -1,11 +1,5 @@
 <?php
-session_start(); // Start the session
-
-// Check if the user is logged in
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php'); // Redirect to login page
-    exit;
-}
+include 'auth.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Patients</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
@@ -33,15 +27,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         }
 
         .search-bar input {
-            padding-left: 30px;
+            padding-left: 40px;
         }
 
         .search-bar i {
             position: absolute;
-            left: 10px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #bbb;
         }
 
         @media (max-width: 576px) {
@@ -57,18 +50,22 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <?php
     include 'header.php';
     ?>
-    <div class="container">
-        <div class="mb-3">
-            <!-- For larger screens (keeping the previous layout) -->
+    <div class="container-fix patients-container">
+        <div class="mb-3 patients-search justify-content-between">
+            <h5 class="bold">Patient List</h5>
             <div class=" justify-content-between align-items-center mb-2">
-                <h3>Patient List</h3>
                 <div class="d-flex">
-                    <div class="search-bar position-relative">
+                    <div class="search-bar position-relative ">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchPatient" class="form-control"
+                        <input type="text" id="searchPatient" class="form-control search-input"
                             placeholder="Search by ID, Name, or Phone" onkeyup="searchPatients()">
                     </div>
-                    <a class="btn btn-primary ms-2" href="newRecord.php">Add New Patient</a>
+                    <a class=" add-btn ms-2" href="newRecord.php">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a class=" add-btn ms-2" id="refresh-page" >
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -77,13 +74,13 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         <table class="table table-hover all-patients-table">
             <thead>
-                <tr>
+                <tr class="table-head">
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
                     <th scope="col">Mobile</th>
-                    <!-- <th scope="col">Age</th> -->
-                    <!-- <th scope="col">Address</th> -->
-                    <th scope="col">Last Visit</th>
+                    <th scope="col" class="hide">Age</th>
+                    <th scope="col" class="hide">Address</th>
+                    <th scope="col" class="hide">Last Visit</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -102,13 +99,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     // Fetch and display each row of data
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<tr class='' onclick=\"window.location.href='patientDetails.php?id=" . $row["id"] . "'\" style='cursor:pointer;'>";
-                        echo "<td>" . $row["id"] . "</td>";
+                        echo "<td class='bold'>" . $row["id"] . "</td>";
                         echo "<td>" . $row["name"] . "</td>";
                         echo "<td>" . $row["contact"] . "</td>";
-                        // echo "<td>" . $row["age"] . "</td>";
-                        // echo "<td>" . $row["address"] . "</td>";
-                        echo "<td>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
-                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='btn btn-primary'>New Visit</a></td>";
+                        echo "<td class='hide'>" . $row["age"] . "</td>";
+                        echo "<td class='hide'>" . $row["address"] . "</td>";
+                        echo "<td class='hide'>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
+                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='table-visit-btn'>New Visit
+                        </a></td>";
                         echo "</tr>";
                     }
                 } else {
@@ -145,6 +143,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 }
             }
         }
+        document.querySelector("#refresh-page").addEventListener("click",function(e){
+            window.location.reload();
+        });
     </script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>

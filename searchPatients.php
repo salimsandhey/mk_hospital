@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include 'dbConnect.php';
 
 $search = $_POST['search'] ?? ''; // Get search input
