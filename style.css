@@ -265,7 +265,7 @@ body {
 }
 .form-check-input:checked{
     background-color: #2E37A4;
-    border-color: #2E37A4;;
+    border-color: #2E37A4;
 }
 .form-control{
     border: 1px solid black !important; /* Change this color as needed */
