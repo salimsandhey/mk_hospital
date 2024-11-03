@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start(); // Start the session only if it's not already started
 }
+include 'addPatient.php';
 ?>
 
 <!DOCTYPE html>
@@ -92,7 +93,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <!-- Add New Patient Button -->
                     <li class="nav-item">
-                        <a class="btn custom-btn ms-2" href="newRecord.php">Add New Patient</a>
+                        <a class="btn custom-btn ms-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">Add New Patient</a>
                     </li>
 
                     <!-- Profile Dropdown -->

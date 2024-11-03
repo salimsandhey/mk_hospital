@@ -19,7 +19,7 @@ include 'auth.php';
     <?php
     include 'header.php';
     ?>
-    <div class="container border py-3 rounded-3 px-4 " style="margin-top: 5rem">
+    <div class="container border py-3 rounded-3 px-4 " style="margin-top: 3rem; margin-bottom: 3rem">
         <h2>Add Patient</h2>
         <form id="patientForm" action="savePatient.php" method="post">
             <div class="row mb-3">
@@ -59,7 +59,7 @@ include 'auth.php';
                 <label for="disease" class="form-label">Disease</label>
                 <input type="text" class="form-control" name="disease" required>
             </div>
-            <button type="submit" class="btn btn-primary">Add Patient</button>
+            <button type="submit" id="saveVisitBtn" class="btn btn-primary">Add Patient</button>
         </form>
     </div>
 
@@ -68,10 +68,15 @@ include 'auth.php';
         crossorigin="anonymous"></script> -->
     <script>
         // Optionally add form validation or other scripts here
-        $(document).ready(function () {
-            $('#patientForm').on('submit', function (event) {
-                // Add your validation or processing logic here if needed
-            });
+        document.querySelector('form').addEventListener('submit', function (e) {
+            // Check if the form is valid
+            if (this.checkValidity()) {
+                const saveButton = document.getElementById('saveVisitBtn');
+                saveButton.disabled = true; // Disable the button
+                saveButton.innerHTML = 'Saving...'; // Optionally change the button text
+            } else {
+                e.preventDefault(); // Prevent form submission if invalid
+            }
         });
     </script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>

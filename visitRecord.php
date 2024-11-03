@@ -4,6 +4,16 @@ include 'auth.php';
 include "dbConnect.php"; // Include your database connection
 
 $patient_id = $_GET['id']; // Get the patient ID from the URL
+
+$sql = "SELECT medicines FROM visits WHERE patient_id = $patient_id ORDER BY visit_date DESC LIMIT 1";
+$result = mysqli_query($conn, $sql);
+
+$previousMedicines = '';
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $previousMedicines = $row['medicines'];
+    print_r($previousMedicines);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -95,6 +105,32 @@ $patient_id = $_GET['id']; // Get the patient ID from the URL
             });
             document.getElementById('medicines_input').value = medicines.join(', ');
         }
+        function repeatPreviousMedicines() {
+            const previousMedicines = <?php echo json_encode($previousMedicines); ?>;
+            if (previousMedicines) {
+                const medicinesArray = previousMedicines.split(', '); // Assuming medicines are separated by commas
+                medicinesArray.forEach(medicine => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.textContent = medicine;
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Remove';
+                    deleteBtn.className = 'btn btn-danger btn-sm';
+                    deleteBtn.onclick = function () {
+                        li.remove();
+                        updateMedicines();
+                    };
+
+                    li.appendChild(deleteBtn);
+                    document.getElementById('medicines_list').appendChild(li);
+                });
+                updateMedicines();
+            } else {
+                alert("No previous medicines found for this patient.");
+            }
+        }
+
     </script>
     <style>
         .medicine-result {
@@ -110,6 +146,24 @@ $patient_id = $_GET['id']; // Get the patient ID from the URL
         .medicine-result:hover {
             background-color: #f0f0f0;
         }
+
+        .visit-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #2E37A4;
+            /* Adjust color to highlight */
+        }
+
+        ul {
+            padding: 0 !important;
+        }
     </style>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -117,88 +171,120 @@ $patient_id = $_GET['id']; // Get the patient ID from the URL
 <body>
     <?php include 'header.php'; ?>
     <div class="container mb-5">
-        <h2>Record Patient Visit</h2>
+        <div class="d-flex justify-content-between">
+            <h2>Record Patient Visit</h2>
+            <button type="button" class="btn custom-btn" data-bs-toggle="modal" data-bs-target="#previousVisitsModal">
+                View Previous Visits
+            </button>
+        </div>
         <form action="saveVisit.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>">
 
             <!-- Visit Date -->
             <div class="mb-3">
-                <label for="visit_date" class="form-label">Visit Date</label>
+                <h6 for="visit_date" class="form-label">Visit Date</h6>
                 <input type="date" class="form-control" name="visit_date" id="visit_date" required>
             </div>
 
             <!-- General Treatment Description (Text Area) -->
             <div class="mb-3">
-                <label for="treatment" class="form-label">Treatment Description</label>
+                <h6 for="treatment" class="form-label">Treatment Description</h6>
                 <textarea class="form-control" name="treatment" rows="4" placeholder="Describe the treatment"
                     required></textarea>
             </div>
 
             <!-- Treatment Options (Checkboxes) -->
-            <div class="mb-3">
-                <label for="treatment_options" class="form-label">Specific Treatment Options</label><br>
+            <div class=" mb-3">
+            <h6 for="treatment_options" class="form-label">Specific Treatment Options</h6><br>
+                <div class="row">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="footbooster" name="treatment_options[]"
+                                value="FOOTBOOSTER (FB)">
+                            <label class="form-check-label" for="footbooster">FOOTBOOSTER (FB)</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="footbooster" name="treatment_options[]"
-                        value="FOOTBOOSTER (FB)">
-                    <label class="form-check-label" for="footbooster">FOOTBOOSTER (FB)</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="tense" name="treatment_options[]"
+                                value="TENSE+">
+                            <label class="form-check-label" for="tense">TENSE+</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="tense" name="treatment_options[]"
-                        value="TENSE+">
-                    <label class="form-check-label" for="tense">TENSE+</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="tmc" name="treatment_options[]"
+                                value="TMC">
+                            <label class="form-check-label" for="tmc">TMC</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="tmc" name="treatment_options[]" value="TMC">
-                    <label class="form-check-label" for="tmc">TMC</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="ift" name="treatment_options[]"
+                                value="IFT">
+                            <label class="form-check-label" for="ift">IFT</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="ift" name="treatment_options[]" value="IFT">
-                    <label class="form-check-label" for="ift">IFT</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="jsb" name="treatment_options[]"
+                                value="JSB">
+                            <label class="form-check-label" for="jsb">JSB</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="jsb" name="treatment_options[]" value="JSB">
-                    <label class="form-check-label" for="jsb">JSB</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="laser" name="treatment_options[]"
+                                value="LASER THERAPY">
+                            <label class="form-check-label" for="laser">LASER THERAPY</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="laser" name="treatment_options[]"
-                        value="LASER THERAPY">
-                    <label class="form-check-label" for="laser">LASER THERAPY</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="lico" name="treatment_options[]"
+                                value="LICO">
+                            <label class="form-check-label" for="lico">LICO</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="lico" name="treatment_options[]" value="LICO">
-                    <label class="form-check-label" for="lico">LICO</label>
-                </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="elastic_bandage"
+                                name="treatment_options[]" value="ELASTIC BANDAGE">
+                            <label class="form-check-label" for="elastic_bandage">ELASTIC BANDAGE</label>
+                        </div>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="elastic_bandage" name="treatment_options[]"
-                        value="ELASTIC BANDAGE">
-                    <label class="form-check-label" for="elastic_bandage">ELASTIC BANDAGE</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="bandage" name="treatment_options[]"
-                        value="BANDAGE">
-                    <label class="form-check-label" for="bandage">BANDAGE</label>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="bandage" name="treatment_options[]"
+                                value="BANDAGE">
+                            <label class="form-check-label" for="bandage">BANDAGE</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
 
             <!-- Medicines (with search and quantity on one row) -->
             <div class="mb-3">
-                <label for="medicines" class="form-label">Medicines Prescribed</label>
+                <div class="d-flex justify-content-between">
+                    <h6 for="medicines" class="form-label">Medicines Prescribed</h6>
+                    <a href="javascript:void(0);" id="repeatMedicineBtn" class="primary-color"
+                        onclick="repeatPreviousMedicines()">Repeat Previous Medicines</a>
+                </div>
 
                 <div class="input-group mb-3">
                     <input type="text" id="medicine_search" class="form-control" placeholder="Search Medicine"
                         oninput="searchMedicines()">
                     <input type="number" id="medicine_quantity" class="form-control" placeholder="Quantity" min="1">
-                    <button class="btn btn-secondary" type="button" onclick="addMedicine()">Add</button>
+                    <button class="btn custom-btn" type="button" onclick="addMedicine()">Add</button>
                 </div>
 
                 <!-- Div to show search results -->
@@ -253,14 +339,51 @@ $patient_id = $_GET['id']; // Get the patient ID from the URL
 
             <!-- Fees -->
             <div class="mb-3">
-                <label for="fees" class="form-label">Consultation Fees</label>
+                <h6 for="fees" class="form-label">Consultation Fees</h6>
                 <input type="number" class="form-control" name="fees" placeholder="Enter fees amount" required>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" id="saveVisitBtn" class="btn btn-primary">Save Visit</button>
+            <button type="submit" id="saveVisitBtn" class="btn custom-btn">Save Visit</button>
         </form>
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="previousVisitsModal" tabindex="-1" aria-labelledby="previousVisitsLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="previousVisitsLabel">Previous Visits</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <?php
+                            // PHP code to fetch and display previous visits for this patient
+                            include 'dbConnect.php';
+                            $patient_id = $_GET['id'];
+                            $sql = "SELECT visit_date, treatment, medicines FROM visits WHERE patient_id = '$patient_id' ORDER BY visit_date DESC";
+                            $result = mysqli_query($conn, $sql);
 
+                            if (mysqli_num_rows($result) > 0) {
+                                echo "<ul>";
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    echo "<div class='visit-box'>";
+                                    echo "<p><span class='highlight'>Date:</span> " . $row['visit_date'] . "</p>";
+                                    echo "<p><span class='highlight'>Treatment:</span> " . $row['treatment'] . "</p>";
+                                    echo "<p><span class='highlight'>Medicines:</span> " . $row['medicines'] . "</p>";
+                                    echo "</div>";
+                                }
+
+                                echo "</ul>";
+                            } else {
+                                echo "No previous visits found.";
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->

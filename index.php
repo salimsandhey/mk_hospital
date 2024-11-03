@@ -7,7 +7,7 @@ include 'auth.php';
 ?>
 <?php
 include "dbConnect.php"; // Include your database connection
-
+include 'addPatient.php';
 // Get today's date
 $today = date('Y-m-d');
 
@@ -55,7 +55,7 @@ $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings-
     <?php include "header.php"; ?>
 
     <div class="welcome container-fix">
-        <h3>Welcome, <span class="d-name"><?php echo$_SESSION['name'] ?></span></h3>
+        <h3>Welcome, <span class="d-name"><?php echo $_SESSION['name'] ?></span></h3>
         <p>Have a nice day at work</p>
     </div>
     <div class="container-fix dashboard-content">
@@ -91,9 +91,9 @@ $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings-
             <h5>Patients List</h5>
             <div>
                 <a class="show-all" href="patients.php">Show All</a>
-                <a class=" add-btn ms-2" href="newRecord.php">
-                        <i class="fas fa-plus"></i>
-                    </a>
+                <a class="add-btn ms-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                    <i class="fas fa-plus"></i>
+                </a>
             </div>
         </div>
         <table class="table table-hover mt-2">
@@ -102,8 +102,8 @@ $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings-
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
                     <th scope="col">Mobile</th>
-                     <th scope="col" class="hide">Age</th> 
-                     <th scope="col" class="hide">Address</th> 
+                    <th scope="col" class="hide">Age</th>
+                    <th scope="col" class="hide">Address</th>
                     <th scope="col" class="hide">Last Visit</th>
                     <th scope="col">Action</th>
                 </tr>
