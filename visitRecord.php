@@ -176,7 +176,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                 View Previous Visits
             </button>
         </div>
-        <form action="saveVisit.php" method="POST" enctype="multipart/form-data">
+        <form action="saveVisit.php" method="POST" enctype="multipart/form-data" id="Form">
             <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>">
 
             <!-- Visit Date -->
@@ -414,13 +414,12 @@ if ($result && mysqli_num_rows($result) > 0) {
         }
     </script>
     <script>
-        // Add an event listener to the form submission
-        document.querySelector('form').addEventListener('submit', function (e) {
-            // Check if the form is valid
-            if (this.checkValidity()) {
+        document.getElementById('Form').addEventListener('submit', function (e) {
+            const form = this;
+            if (form.checkValidity()) {
                 const saveButton = document.getElementById('saveVisitBtn');
                 saveButton.disabled = true; // Disable the button
-                saveButton.innerHTML = 'Saving...'; // Optionally change the button text
+                saveButton.textContent = 'Saving...'; // Change the button text
             } else {
                 e.preventDefault(); // Prevent form submission if invalid
             }
