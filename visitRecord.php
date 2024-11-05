@@ -43,11 +43,13 @@ if ($result && mysqli_num_rows($result) > 0) {
             }
         }
 
+
+
         // Function to handle selecting a medicine from search results
         function selectMedicine(medicineId, medicineName) {
             $('#medicine_search').val(medicineName);
-            $('#medicines_input').val(medicineId); // Store selected medicine ID
-            $('#medicine_results').html(''); // Clear search results
+            $('#medicines_input').val(medicineId);
+            $('#medicine_results').html('');
         }
 
         // JavaScript to toggle the X-ray description text box based on checkbox status
@@ -64,14 +66,13 @@ if ($result && mysqli_num_rows($result) > 0) {
         function addMedicine() {
             const medicineName = $('#medicine_search').val();
             const quantity = $('#medicine_quantity').val();
+            const timing = $('#medicine_timing').val();
 
-            if (medicineName && quantity > 0) {
-                // Create a new list item
+            if (medicineName && quantity > 0 && timing) {
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.textContent = `${medicineName} - Quantity: ${quantity}`;
+                li.textContent = `${medicineName} - Quantity: ${quantity} - Timing: ${timing}`;
 
-                // Add delete button to list item
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Remove';
                 deleteBtn.className = 'btn btn-danger btn-sm';
@@ -81,20 +82,17 @@ if ($result && mysqli_num_rows($result) > 0) {
                 };
 
                 li.appendChild(deleteBtn);
-
-                // Add the new list item to the medicines list
                 document.getElementById('medicines_list').appendChild(li);
 
-                // Update the hidden input with the new medicines list
                 updateMedicines();
-
-                // Reset quantity input for the next entry
                 $('#medicine_quantity').val('');
                 $('#medicine_search').val('');
+                $('#medicine_timing').val('Morning'); // Reset timing
             } else {
-                alert("Please select a medicine and enter a valid quantity.");
+                alert("Please select a medicine, enter a valid quantity, and select a timing.");
             }
         }
+
 
         // Update the hidden input with the selected medicines
         function updateMedicines() {
@@ -105,6 +103,7 @@ if ($result && mysqli_num_rows($result) > 0) {
             });
             document.getElementById('medicines_input').value = medicines.join(', ');
         }
+
         function repeatPreviousMedicines() {
             const previousMedicines = <?php echo json_encode($previousMedicines); ?>;
             if (previousMedicines) {
@@ -195,7 +194,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
             <!-- Treatment Options (Checkboxes) -->
             <div class=" mb-3">
-            <h6 for="treatment_options" class="form-label">Specific Treatment Options</h6><br>
+                <h6 for="treatment_options" class="form-label">Specific Treatment Options</h6><br>
                 <div class="row">
                     <div class="col-md-4 col-sm-6">
                         <div class="form-check">
@@ -284,16 +283,19 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <input type="text" id="medicine_search" class="form-control" placeholder="Search Medicine"
                         oninput="searchMedicines()">
                     <input type="number" id="medicine_quantity" class="form-control" placeholder="Quantity" min="1">
+                    <select id="medicine_timing" class="form-select">
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
+                        <option value="Evening">Evening</option>
+                        <option value="Morning-Evening">Morning-Evening</option>
+                        <option value="Afternoon-Evening">Afternoon-Evening</option>
+                        <option value="Morning-Afternoon-Evening">Morning-Afternoon-Evening</option>
+                    </select>
                     <button class="btn custom-btn" type="button" onclick="addMedicine()">Add</button>
                 </div>
 
-                <!-- Div to show search results -->
                 <div id="medicine_results"></div>
-
-                <!-- List of selected medicines with quantity -->
                 <ul id="medicines_list" class="list-group mt-3"></ul>
-
-                <!-- Hidden input to store the selected medicines -->
                 <input type="hidden" id="medicines_input" name="medicines">
             </div>
 

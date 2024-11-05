@@ -25,7 +25,7 @@ $result = mysqli_query($conn, $query);
         <div class="d-flex justify-content-between align-items-center">
             <h2>Medicine Dashboard</h2>
             <!-- Add Medicine Button -->
-            <a href="addMedicineForm.php" class="btn btn-primary">Add Medicine</a>
+            <a href="addMedicineForm.php" class="btn custom-btn">Add Medicine</a>
         </div>
 
         <?php if (mysqli_num_rows($result) > 0) { ?>

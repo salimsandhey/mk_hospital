@@ -8,6 +8,9 @@ $patient_id = $_GET['id'];
 $query = "SELECT * FROM patient WHERE id = '$patient_id'";
 $result = mysqli_query($conn, $query);
 
+$allergic_meds_query = "SELECT * FROM allergic_medicines WHERE patient_id = '$patient_id'";
+$allergic_meds_result = mysqli_query($conn, $allergic_meds_query);
+
 // Fetch visit details
 $visits_sql = "SELECT * FROM visits WHERE patient_id = $patient_id ORDER BY visit_date DESC";
 $visits_result = mysqli_query($conn, $visits_sql);
@@ -54,6 +57,16 @@ if ($row = mysqli_fetch_assoc($result)) {
         .clickable-row:hover {
             background-color: #f0f0f0;
         }
+
+        .med-item {
+            background-color: #e3f2fd;
+            color: #007BFF;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            /* Add margin to separate each item */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
@@ -72,17 +85,39 @@ if ($row = mysqli_fetch_assoc($result)) {
                 <p><strong>Address:</strong> <?php echo htmlspecialchars($address) ?></p>
                 <p><strong>Contact:</strong> <?php echo htmlspecialchars($contact) ?></p>
                 <p><strong>Diseases:</strong> <?php echo htmlspecialchars($disease) ?></p>
+                <!-- Allergic Medicines Section -->
+                <div class="meds-title"><strong>Allergic Medicines:</strong></div>
+                <div class="allergic-meds">
+                    <?php
+                    if (mysqli_num_rows($allergic_meds_result) > 0) {
+                        while ($med = mysqli_fetch_assoc($allergic_meds_result)) {
+                            echo '<div class="allergic-item">' . htmlspecialchars($med['medicine_name']) . '</div>';
+                        }
+                    } else {
+                        // echo '<div class="allergic-item">None</div>';
+                    }
+                    ?>
+                </div>
+
                 <hr>
-                <div class="d-flex justify-content-end">
-                    <a href="editPatient.php?id=<?php echo $patient_id ?>" class="edit-btn me-2">
-                        <i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit
-                    </a>
-                    <!-- Trigger for Delete Modal -->
-                    <button type="button" class="delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        data-id="<?php echo $patient_id ?>" data-name="<?php echo htmlspecialchars($name) ?>">
-                        <i class="fa-solid fa-trash"></i>
-                        Delete
-                    </button>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#allergicMedicineModal">
+                            Add Allergic Medicine
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="editPatient.php?id=<?php echo $patient_id ?>" class="edit-btn me-2">
+                            <i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit
+                        </a>
+                        <!-- Trigger for Delete Modal -->
+                        <button type="button" class="delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-id="<?php echo $patient_id ?>" data-name="<?php echo htmlspecialchars($name) ?>">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,7 +134,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                 <div class="card-body">
                     <?php if (mysqli_num_rows($visits_result) > 0) { ?>
                         <table class="table table-hover ">
-                            <thead >
+                            <thead>
                                 <tr>
                                     <th>Visit Date</th>
                                     <th>Treatment</th>
@@ -124,7 +159,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                                         echo '<span class="badge bg-primary">' . htmlspecialchars(trim($option)) . '</span> ';
                                     }
                                     echo "</td>";
-                            
+
                                     // Display Medicines
                                     echo "<td>" . (!empty($visit['medicines']) ? htmlspecialchars($visit['medicines']) : "None") . "</td>";
                                     echo "<td>" . ($visit['xray_taken'] ? "Yes" : "No") . "</td>"; // Display Yes/No for X-ray
@@ -162,6 +197,30 @@ if ($row = mysqli_fetch_assoc($result)) {
             </div>
         </div>
     </div>
+    <!-- Allergic Medicine Modal -->
+    <div class="modal fade" id="allergicMedicineModal" tabindex="-1" aria-labelledby="allergicMedicineModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allergicMedicineModalLabel">Manage Allergic Medicines</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="allergicMedicineForm" action="saveAllergicMedicine.php" method="post">
+                        <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>">
+                        <div class="mb-3">
+                            <label for="allergic_medicines" class="form-label">Allergic Medicines</label>
+                            <textarea class="form-control" id="allergic_medicines" name="allergic_medicines"
+                                rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Allergic Medicines</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
@@ -185,6 +244,20 @@ if ($row = mysqli_fetch_assoc($result)) {
 
             var confirmDeleteButton = document.getElementById('confirmDelete');
             confirmDeleteButton.setAttribute('href', deleteLink);
+        });
+
+        // Fetch previous allergic medicines and populate the textarea
+        document.getElementById('allergicMedicineModal').addEventListener('show.bs.modal', function (event) {
+            var patientId = "<?php echo $patient_id; ?>"; // Use PHP to get patient ID
+            var textarea = document.getElementById('allergic_medicines');
+
+            // Fetch allergic medicines via AJAX
+            fetch('fetchAllergicMedicines.php?patient_id=' + patientId)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate textarea with previous allergic medicines
+                    textarea.value = data.medicines.join('\n'); // Join medicines with new lines
+                });
         });
     </script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>

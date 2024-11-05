@@ -8,6 +8,7 @@ $patient_id = $_POST['patient_id'];
 $visit_date = $_POST['visit_date'];
 $treatment = $_POST['treatment'];
 $medicines = $_POST['medicines'];
+echo($medicines);
 $fees = $_POST['fees'];
 $xray_taken = isset($_POST['xray']) ? 1 : 0; // Check if X-ray checkbox was selected
 $xray_details = $xray_taken ? $_POST['xray_details'] : NULL; // Only store details if X-ray is taken
