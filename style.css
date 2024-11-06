@@ -279,3 +279,20 @@ body {
     border-radius: 10px;
 
 }
+.red{
+    color: red !important;
+}
+.bold{
+    font-weight: bold;
+}
+.fa-eye{
+    color: #2E37A4;
+}
+.fa-eye-slash{
+    color: #2E37A4;
+
+}
+.visit-show-all{
+    font-size: 12px;
+    margin-left: 10px;
+}
