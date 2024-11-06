@@ -10,6 +10,8 @@ include "dbConnect.php"; // Include your database connection
 include 'addPatient.php';
 // Get today's date
 $today = date('Y-m-d');
+$yesterday = date("Y-m-d", strtotime("-1 day"));
+
 
 // Query to fetch the count of today's new patients
 $queryNewPatientsToday = "SELECT COUNT(*) AS new_patients_today FROM patient WHERE DATE(registration_date) = '$today'";
@@ -36,6 +38,19 @@ $queryTodaysEarnings = "SELECT SUM(fees) AS todays_earnings FROM visits WHERE DA
 $resultTodaysEarnings = $conn->query($queryTodaysEarnings);
 $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings->fetch_assoc()['todays_earnings'] : 0.00;
 
+$queryYesterdaysEarnings = "SELECT SUM(fees) AS yesterdays_earnings FROM visits WHERE DATE(visit_date) = '$yesterday'";
+$resultYesterdaysEarnings = $conn->query($queryYesterdaysEarnings);
+$yesterdaysEarnings = ($resultYesterdaysEarnings->num_rows > 0) ? $resultYesterdaysEarnings->fetch_assoc()['yesterdays_earnings'] : 0.00;
+
+if ($yesterdaysEarnings > 0) {
+    $percentageChange = (($todaysEarnings - $yesterdaysEarnings) / $yesterdaysEarnings) * 100;
+    $icon = ($percentageChange > 0) ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>';
+    $colorClass = ($percentageChange > 0) ? 'text-success' : 'text-danger';
+} else {
+    $percentageChange = 0;
+    $icon = ''; // No icon if there's no previous day data
+    $colorClass = 'text-muted';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +62,7 @@ $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings-
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -73,15 +89,23 @@ $todaysEarnings = ($resultTodaysEarnings->num_rows > 0) ? $resultTodaysEarnings-
                     <h5>Today's New Visits</h5>
                     <h3 class="ms-2 mt-1"><?php echo $newVisitsToday ?></h3>
                     <hr>
-                    <p><span class="green"><?php echo $totalVisits ?></span> Total Visits</p>
+                    <p><span class="green"><?php echo $totalVisits ?></span> Total Visits </p>
                 </div>
             </div>
             <div class="col-12 col-md-4">
                 <div class="dash-item">
-                    <h5>Today's Earning</h5>
-                    <h3 class="ms-2 mt-1">₹ <?php echo $todaysEarnings ?></h3>
+                    <h5>Today's Earning
+                        <button id="toggleEarningsBtn" class="btn btn-link p-0" onclick="toggleEarnings()">
+                            <i class="fa fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </h5>
+                    <h3 class="ms-2 mt-1" id="earningsAmount">***</h3>
                     <hr>
-                    <p><span class="green">20%</span> than yesterday</p>
+                    <p>
+                        <span class="<?php echo $colorClass; ?> bold">
+                            <?php echo abs(round($percentageChange, 2)); ?>% <?php echo $icon; ?>
+                        </span> than yesterday
+                    </p>
                 </div>
             </div>
         </div>
@@ -140,6 +164,23 @@ LIMIT 5"; // Newest first
             </tbody>
         </table>
     </div>
+    <script>
+        let isEarningsVisible = false;
+
+        function toggleEarnings() {
+            const earningsAmount = document.getElementById('earningsAmount');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (isEarningsVisible) {
+                earningsAmount.innerText = '***'; // Show asterisk when hidden
+                toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                earningsAmount.innerText = '₹ <?php echo $todaysEarnings; ?>'; // Show earnings when visible
+                toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+            isEarningsVisible = !isEarningsVisible;
+        }
+    </script>
 
     <!-- Bootstrap JS -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
