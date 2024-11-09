@@ -102,7 +102,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                 <hr>
                 <div class="d-flex justify-content-between">
                     <div>
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                        <button type="button" class="btn custom-btn" data-bs-toggle="modal"
                             data-bs-target="#allergicMedicineModal">
                             Add Allergic Medicine
                         </button>
@@ -138,10 +138,10 @@ if ($row = mysqli_fetch_assoc($result)) {
                                 <tr>
                                     <th>Visit Date</th>
                                     <th>Treatment</th>
-                                    <th>Specific Treatments</th>
+                                    <th class="hide">Specific Treatments</th>
                                     <th>Medicines</th>
-                                    <th>X-ray</th>
-                                    <th>X-ray Description</th>
+                                    <th class="hide">X-ray</th>
+                                    <th class="hide">X-ray Description</th>
                                     <th>Fees</th>
                                 </tr>
                             </thead>
@@ -154,16 +154,16 @@ if ($row = mysqli_fetch_assoc($result)) {
 
                                     // Display specific treatments
                                     $treatmentOptions = explode(",", $visit['treatment_options']);
-                                    echo "<td>";
+                                    echo "<td class='hide'>";
                                     foreach ($treatmentOptions as $option) {
-                                        echo '<span class="badge bg-primary">' . htmlspecialchars(trim($option)) . '</span> ';
+                                        echo '<span class="badge primary-background">' . htmlspecialchars(trim($option)) . '</span> ';
                                     }
                                     echo "</td>";
 
                                     // Display Medicines
                                     echo "<td>" . (!empty($visit['medicines']) ? htmlspecialchars($visit['medicines']) : "None") . "</td>";
-                                    echo "<td>" . ($visit['xray_taken'] ? "Yes" : "No") . "</td>"; // Display Yes/No for X-ray
-                                    echo "<td>" . htmlspecialchars($visit['xray_details']) . "</td>";
+                                    echo "<td class='hide'>" . ($visit['xray_taken'] ? "Yes" : "No") . "</td>"; // Display Yes/No for X-ray
+                                    echo "<td class='hide'>" . htmlspecialchars($visit['xray_details']) . "</td>";
                                     echo "<td>₹" . htmlspecialchars($visit['fees']) . "</td>";
                                     echo "</tr>";
                                 }

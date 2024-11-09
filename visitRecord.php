@@ -171,9 +171,9 @@ if ($result && mysqli_num_rows($result) > 0) {
     <?php include 'header.php'; ?>
     <div class="container mb-5">
         <div class="d-flex justify-content-between">
-            <h2>Record Patient Visit</h2>
+            <h2>Patient Visit</h2>
             <button type="button" class="btn custom-btn" data-bs-toggle="modal" data-bs-target="#previousVisitsModal">
-                View Previous Visits
+                Previous Visits
             </button>
         </div>
         <form action="saveVisit.php" method="POST" enctype="multipart/form-data" id="Form">
@@ -276,7 +276,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="d-flex justify-content-between">
                     <h6 for="medicines" class="form-label">Medicines Prescribed</h6>
                     <a href="javascript:void(0);" id="repeatMedicineBtn" class="primary-color"
-                        onclick="repeatPreviousMedicines()">Repeat Previous Medicines</a>
+                        onclick="repeatPreviousMedicines()">Repeat Medicines</a>
                 </div>
 
                 <div class="input-group mb-3">

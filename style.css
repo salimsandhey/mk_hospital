@@ -296,3 +296,19 @@ body {
     font-size: 12px;
     margin-left: 10px;
 }
+.primary-background{
+    background-color: #2E37A4 !important;
+}
+.all-patients-table tbody tr:nth-child(even) {
+    background-color: #fff !important;
+}
+
+/* Apply different background color to odd rows */
+.all-patients-table tbody tr:nth-child(odd) {
+    background-color: rgba(46, 55, 164, 0.05) !important;
+}
+.link{
+    text-decoration: underline ;
+    color: black;
+    
+}

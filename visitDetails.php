@@ -114,7 +114,7 @@ $conn->close();
                         <p><strong>Consultation Fees:</strong> ₹<?php echo htmlspecialchars($visit['fees']); ?></p>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <a href="editvisitdetails.php?visit_id=<?php echo $visit_id ?>" class="edit-btn me-2">
+                        <a href="editVisitDetails.php?visit_id=<?php echo $visit_id ?>" class="edit-btn me-2">
                             <i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit
                         </a>
                         <!-- Trigger for Delete Modal -->
@@ -236,7 +236,7 @@ $conn->close();
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="deletevisit.php?visit_id=<?php echo $visit_id; ?>" class="btn btn-danger">Delete</a>
+                    <a href="deleteVisit.php?visit_id=<?php echo $visit_id; ?>" class="btn btn-danger">Delete</a>
                 </div>
             </div>
         </div>

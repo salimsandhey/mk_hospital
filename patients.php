@@ -105,7 +105,7 @@ include 'auth.php';
                         echo "<td class='hide'>" . $row["age"] . "</td>";
                         echo "<td class='hide'>" . $row["address"] . "</td>";
                         echo "<td class='hide'>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
-                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='table-visit-btn'>New Visit
+                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='btn custom-btn'>New Visit
                         </a></td>";
                         echo "</tr>";
                     }

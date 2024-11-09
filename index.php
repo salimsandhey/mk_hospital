@@ -78,7 +78,7 @@ if ($yesterdaysEarnings > 0) {
         <div class="row">
             <div class="col-12 col-md-4">
                 <div class="dash-item">
-                    <h5>Today's New Patients</h5>
+                    <h5><a href="todayPatients.php" class="link">Today's New Patients</a></h5>
                     <h3 class="ms-2 mt-1"><?php echo $newPatientsToday ?></h3>
                     <hr>
                     <p><span class="green"><?php echo $totalPatients ?></span> Total Patients</p>
@@ -86,7 +86,7 @@ if ($yesterdaysEarnings > 0) {
             </div>
             <div class="col-12 col-md-4">
                 <div class="dash-item">
-                    <h5>Today's New Visits</h5>
+                    <h5><a href="todayVisits.php" class="link">Today's New Visits</a></h5>
                     <h3 class="ms-2 mt-1"><?php echo $newVisitsToday ?></h3>
                     <hr>
                     <p><span class="green"><?php echo $totalVisits ?></span> Total Visits </p>
@@ -94,7 +94,7 @@ if ($yesterdaysEarnings > 0) {
             </div>
             <div class="col-12 col-md-4">
                 <div class="dash-item">
-                    <h5>Today's Earning
+                    <h5 class="link">Today's Earning
                         <button id="toggleEarningsBtn" class="btn btn-link p-0" onclick="toggleEarnings()">
                             <i class="fa fa-eye" id="toggleIcon"></i>
                         </button>
