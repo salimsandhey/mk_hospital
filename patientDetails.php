@@ -121,7 +121,6 @@ if ($row = mysqli_fetch_assoc($result)) {
                 </div>
             </div>
         </div>
-
         <div class="card mb-3 profile-box">
             <div class="card profile-box">
                 <div class="profile-head d-flex justify-content-between align-items-center">
@@ -147,7 +146,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                             </thead>
                             <tbody>
                                 <?php
-                                while ($visit = mysqli_fetch_assoc($visits_result)) {
+                                while ($visit = mysqli_fetch_assoc($visits_result)) {   
                                     echo "<tr class='clickable-row' data-href='visitDetails.php?visit_id=" . $visit['id'] . "'>";
                                     echo "<td>" . date("d M Y", strtotime($visit['visit_date'])) . "</td>";
                                     echo "<td>" . htmlspecialchars($visit['treatment']) . "</td>";

@@ -93,7 +93,8 @@ include 'addPatient.php';
 
                     <!-- Add New Patient Button -->
                     <li class="nav-item">
-                        <a class="btn custom-btn ms-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">Add New Patient</a>
+                        <a class="btn custom-btn ms-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">Add New
+                            Patient</a>
                     </li>
 
                     <!-- Profile Dropdown -->
@@ -105,7 +106,22 @@ include 'addPatient.php';
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <!-- Add dropdown items here if needed -->
                             <li class="nav-item">
+                                <a class="nav-link" href="profile.php">Profile</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="logout.php">Logout</a>
+                            </li>
+                            <li class="nav-item">
+
+                                <button type="button" class="btn btn-info position-relative" data-bs-toggle="modal"
+                                    data-bs-target="#featuresModal">
+                                    New Features
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                        <span class="visually-hidden">New alerts</span>
+                                    </span>
+                                </button>
+
                             </li>
                         </ul>
                     </li>
@@ -113,6 +129,45 @@ include 'addPatient.php';
             </div>
         </div>
     </nav>
+
+    <!-- Bootstrap Modal for New Features -->
+    <div class="modal fade" id="featuresModal" tabindex="-1" aria-labelledby="featuresModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="featuresModalLabel">New Features in This Update</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <p><strong>Last Update Date:</strong> November 11, 2024</p>
+                <ul>
+                    <li>
+                        <strong>Separate today's new patients and new visits:</strong> 
+                        Track new patient registrations and visits separately for a clearer view of daily activity.
+                        <br>
+                        <a href="todayPatients.php" class="link-primary">View Today's Patients</a> | 
+                        <a href="todayVisits.php" class="link-primary">View Today's Visits</a>
+                    </li>
+                    <li>
+                        <strong>Added security layer to earnings:</strong> 
+                        Your earnings data is now protected, ensuring sensitive information is secure.
+                        <br>
+                        <a href="index.php" class="link-primary">View Earnings</a>
+                    </li>
+                    <li>
+                        <strong>New profile page:</strong> 
+                        Easily change your name and password from the new profile page for better account management.
+                        <br>
+                        <a href="profile.php" class="link-primary">Go to Profile</a>
+                    </li>
+                </ul>
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main content (Add padding top because of fixed navbar) -->
     <div class="container">

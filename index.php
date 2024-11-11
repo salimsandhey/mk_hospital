@@ -102,8 +102,8 @@ if ($yesterdaysEarnings > 0) {
                     <h3 class="ms-2 mt-1" id="earningsAmount">***</h3>
                     <hr>
                     <p>
-                        <span class="<?php echo $colorClass; ?> bold">
-                            <?php echo abs(round($percentageChange, 2)); ?>% <?php echo $icon; ?>
+                        <span id="percentageChange" class="<?php echo $colorClass; ?> bold">
+                            ***
                         </span> than yesterday
                     </p>
                 </div>
@@ -170,17 +170,19 @@ LIMIT 5"; // Newest first
         function toggleEarnings() {
             const earningsAmount = document.getElementById('earningsAmount');
             const toggleIcon = document.getElementById('toggleIcon');
+            const percentageChange = document.getElementById('percentageChange');
 
             if (isEarningsVisible) {
-                earningsAmount.innerText = '***'; // Show asterisk when hidden
+                earningsAmount.innerText = '***'; // Hide earnings
+                percentageChange.innerText = '***'; // Hide percentage
                 toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
             } else {
-                earningsAmount.innerText = '₹ <?php echo $todaysEarnings; ?>'; // Show earnings when visible
+                earningsAmount.innerText = '₹ <?php echo number_format($todaysEarnings, 2); ?>'; // Show earnings
+                percentageChange.innerHTML = '<?php echo abs(round($percentageChange, 2)); ?>% <?php echo $icon; ?>'; // Show percentage
                 toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
             }
             isEarningsVisible = !isEarningsVisible;
-        }
-    </script>
+        }    </script>
 
     <!-- Bootstrap JS -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
