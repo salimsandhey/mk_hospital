@@ -139,29 +139,24 @@ include 'addPatient.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <p><strong>Last Update Date:</strong> November 11, 2024</p>
-                <ul>
-                    <li>
-                        <strong>Separate today's new patients and new visits:</strong> 
-                        Track new patient registrations and visits separately for a clearer view of daily activity.
-                        <br>
-                        <a href="todayPatients.php" class="link-primary">View Today's Patients</a> | 
-                        <a href="todayVisits.php" class="link-primary">View Today's Visits</a>
-                    </li>
-                    <li>
-                        <strong>Added security layer to earnings:</strong> 
-                        Your earnings data is now protected, ensuring sensitive information is secure.
-                        <br>
-                        <a href="index.php" class="link-primary">View Earnings</a>
-                    </li>
-                    <li>
-                        <strong>New profile page:</strong> 
-                        Easily change your name and password from the new profile page for better account management.
-                        <br>
-                        <a href="profile.php" class="link-primary">Go to Profile</a>
-                    </li>
-                </ul>
-            </div>
+                    <p><strong>Last Update Date:</strong> November 29, 2024</p>
+                    <ul>
+                        <li>
+                            <strong>Scrollable tables:</strong>
+                            Tables are now scrollable, making it easier to view large datasets without compromising
+                            layout.
+                            <br>
+                        </li>
+                        <li>
+                            <strong>Enhanced patient profile page layout:</strong>
+                            Medicines are now displayed in a cleaner, more readable layout, showing only the medicine
+                            names.
+                            To view quantity and timings, visit the detailed visit records.
+                            <br>
+                        </li>
+                    </ul>
+
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>

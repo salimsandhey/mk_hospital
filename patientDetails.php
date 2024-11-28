@@ -58,15 +58,7 @@ if ($row = mysqli_fetch_assoc($result)) {
             background-color: #f0f0f0;
         }
 
-        .med-item {
-            background-color: #e3f2fd;
-            color: #007BFF;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            /* Add margin to separate each item */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+        
     </style>
 </head>
 
@@ -132,43 +124,63 @@ if ($row = mysqli_fetch_assoc($result)) {
                 </div>
                 <div class="card-body">
                     <?php if (mysqli_num_rows($visits_result) > 0) { ?>
-                        <table class="table table-hover ">
-                            <thead>
-                                <tr>
-                                    <th>Visit Date</th>
-                                    <th>Treatment</th>
-                                    <th class="hide">Specific Treatments</th>
-                                    <th>Medicines</th>
-                                    <th class="hide">X-ray</th>
-                                    <th class="hide">X-ray Description</th>
-                                    <th>Fees</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                while ($visit = mysqli_fetch_assoc($visits_result)) {   
-                                    echo "<tr class='clickable-row' data-href='visitDetails.php?visit_id=" . $visit['id'] . "'>";
-                                    echo "<td>" . date("d M Y", strtotime($visit['visit_date'])) . "</td>";
-                                    echo "<td>" . htmlspecialchars($visit['treatment']) . "</td>";
-
-                                    // Display specific treatments
-                                    $treatmentOptions = explode(",", $visit['treatment_options']);
-                                    echo "<td class='hide'>";
-                                    foreach ($treatmentOptions as $option) {
-                                        echo '<span class="badge primary-background">' . htmlspecialchars(trim($option)) . '</span> ';
+                        <div class="table-responsive">
+                            <table class="table table-hover ">
+                                <thead>
+                                    <tr>
+                                        <th>Visit Date</th>
+                                        <th>Treatment</th>
+                                        <th>Medicines</th>
+                                        <th>Specific Treatments</th>
+                                        <th>X-ray</th>
+                                        <th>X-ray Description</th>
+                                        <th>Fees</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    while ($visit = mysqli_fetch_assoc($visits_result)) {
+                                        $medicines_string = $visit['medicines'];
+                                        $medicines_list = explode(",", $medicines_string);
+    
+                                        echo "<tr class='clickable-row' data-href='visitDetails.php?visit_id=" . $visit['id'] . "'>";
+                                        echo "<td>" . date("d M Y", strtotime($visit['visit_date'])) . "</td>";
+                                        echo "<td>" . htmlspecialchars($visit['treatment']) . "</td>";
+    
+                                        // Display Medicines
+                                        echo "<td class='medicines-list'>";
+                                        if (empty(trim($medicines_string))) {
+                                            // If there are no medicines, display "None"
+                                            echo "None";
+                                        } else {
+                                            // Split the medicines string by commas
+                                            $medicines_list = explode(",", $medicines_string);
+    
+                                            foreach ($medicines_list as $medicine_entry) {
+                                                // Extract only the medicine name (before "- Quantity")
+                                                $medicine_name = explode(" - Quantity", $medicine_entry)[0];
+    
+                                                // Display each medicine name in a separate styled box
+                                                echo "<span class='badge primary-background med-item'>" . htmlspecialchars(trim($medicine_name)) . "</span>";
+                                            }
+                                        }
+                                        echo "</td>";
+                                        // Display specific treatments
+                                        $treatmentOptions = explode(",", $visit['treatment_options']);
+                                        echo "<td>";
+                                        foreach ($treatmentOptions as $option) {
+                                            echo '<span class="badge primary-background">' . htmlspecialchars(trim($option)) . '</span> ';
+                                        }
+                                        echo "</td>";
+                                        echo "<td>" . ($visit['xray_taken'] ? "Yes" : "No") . "</td>"; // Display Yes/No for X-ray
+                                        echo "<td>" . htmlspecialchars($visit['xray_details']) . "</td>";
+                                        echo "<td>₹" . htmlspecialchars($visit['fees']) . "</td>";
+                                        echo "</tr>";
                                     }
-                                    echo "</td>";
-
-                                    // Display Medicines
-                                    echo "<td>" . (!empty($visit['medicines']) ? htmlspecialchars($visit['medicines']) : "None") . "</td>";
-                                    echo "<td class='hide'>" . ($visit['xray_taken'] ? "Yes" : "No") . "</td>"; // Display Yes/No for X-ray
-                                    echo "<td class='hide'>" . htmlspecialchars($visit['xray_details']) . "</td>";
-                                    echo "<td>₹" . htmlspecialchars($visit['fees']) . "</td>";
-                                    echo "</tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php } else { ?>
                         <p>No visits recorded for this patient yet.</p>
                     <?php } ?>
@@ -213,7 +225,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                             <textarea class="form-control" id="allergic_medicines" name="allergic_medicines"
                                 rows="4"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Allergic Medicines</button>
+                        <button type="submit" class="btn custom-btn">Save Allergic Medicines</button>
                     </form>
                 </div>
             </div>

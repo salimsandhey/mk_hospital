@@ -332,5 +332,12 @@ body {
     border: none;
 }
 .dropdown-toggle::after {
-    display: none ;
+    display: none   ;
+}
+.medicines-list span{
+    margin-right: 5px;
+}
+.med-item {
+    
+
 }

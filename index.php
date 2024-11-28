@@ -120,49 +120,51 @@ if ($yesterdaysEarnings > 0) {
                 </a>
             </div>
         </div>
-        <table class="table table-hover mt-2">
-            <thead>
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Mobile</th>
-                    <th scope="col" class="hide">Age</th>
-                    <th scope="col" class="hide">Address</th>
-                    <th scope="col" class="hide">Last Visit</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody id="patientTableBody">
-                <?php
-                include "dbConnect.php";
-                $sql = "SELECT p.*, MAX(v.visit_date) AS last_visit
-FROM patient p
-LEFT JOIN visits v ON p.id = v.patient_id
-GROUP BY p.id
-ORDER BY p.id DESC
-LIMIT 5"; // Newest first
-                $result = mysqli_query($conn, $sql);
-
-                // Check if there are results
-                if (mysqli_num_rows($result) > 0) {
-                    // Fetch and display each row of data
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr class='' onclick=\"window.location.href='patientDetails.php?id=" . $row["id"] . "'\" style='cursor:pointer;'>";
-                        echo "<td>" . $row["id"] . "</td>";
-                        echo "<td>" . $row["name"] . "</td>";
-                        echo "<td class='primary-color'>" . $row["contact"] . "</td>";
-                        echo "<td class='hide'>" . $row["age"] . "</td>";
-                        echo "<td class='hide'>" . $row["address"] . "</td>";
-                        echo "<td class='hide'>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
-                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='btn custom-btn'>New Visit</a></td>";
-                        echo "</tr>";
+        <div class="table-responsive">
+            <table class="table table-hover mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Mobile</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Last Visit</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                    <?php
+                    include "dbConnect.php";
+                    $sql = "SELECT p.*, MAX(v.visit_date) AS last_visit
+    FROM patient p
+    LEFT JOIN visits v ON p.id = v.patient_id
+    GROUP BY p.id
+    ORDER BY p.id DESC
+    LIMIT 5"; // Newest first
+                    $result = mysqli_query($conn, $sql);
+    
+                    // Check if there are results
+                    if (mysqli_num_rows($result) > 0) {
+                        // Fetch and display each row of data
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<tr class='' onclick=\"window.location.href='patientDetails.php?id=" . $row["id"] . "'\" style='cursor:pointer;'>";
+                            echo "<td>" . $row["id"] . "</td>";
+                            echo "<td>" . $row["name"] . "</td>";
+                            echo "<td class='primary-color'>" . $row["contact"] . "</td>";
+                            echo "<td>" . $row["age"] . "</td>";
+                            echo "<td>" . $row["address"] . "</td>";
+                            echo "<td>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
+                            echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='btn custom-btn'>New Visit</a></td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='7' class='text-center'>No patients found</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='7' class='text-center'>No patients found</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <script>
         let isEarningsVisible = false;
