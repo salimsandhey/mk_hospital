@@ -139,19 +139,15 @@ include 'addPatient.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>Last Update Date:</strong> November 29, 2024</p>
+                    <p><strong>Last Update Date:</strong> December 4, 2024</p>
                     <ul>
                         <li>
-                            <strong>Scrollable tables:</strong>
-                            Tables are now scrollable, making it easier to view large datasets without compromising
-                            layout.
+                            <strong>Add Search in Medicine Dashboard.</strong>
+                            
                             <br>
                         </li>
                         <li>
-                            <strong>Enhanced patient profile page layout:</strong>
-                            Medicines are now displayed in a cleaner, more readable layout, showing only the medicine
-                            names.
-                            To view quantity and timings, visit the detailed visit records.
+                            <strong>Add new Medicine taking time options.</strong>
                             <br>
                         </li>
                     </ul>

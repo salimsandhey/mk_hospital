@@ -1,9 +1,8 @@
 <?php
 include 'auth.php';
-
 include "dbConnect.php"; // Include the database connection
 
-// Fetch all medicines
+// Fetch all medicines initially
 $query = "SELECT * FROM medicines";
 $result = mysqli_query($conn, $query);
 ?>
@@ -15,8 +14,8 @@ $result = mysqli_query($conn, $query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medicine Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <?php include 'header.php'; ?>
@@ -28,8 +27,14 @@ $result = mysqli_query($conn, $query);
             <a href="addMedicineForm.php" class="btn custom-btn">Add Medicine</a>
         </div>
 
-        <?php if (mysqli_num_rows($result) > 0) { ?>
-            <table class="table table-bordered table-striped mt-3">
+        <div class="mt-3">
+            <!-- Search Input -->
+            <input type="text" id="search" class="form-control" placeholder="Search for a medicine by name...">
+        </div>
+
+        <!-- Medicines Table -->
+        <div id="medicinesTable" class="mt-3">
+            <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -38,45 +43,52 @@ $result = mysqli_query($conn, $query);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                    <?php if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['name']); ?></td>
+                                <td>
+                                    <button class="btn btn-danger" onclick="confirmDelete(<?php echo $row['id']; ?>)">Delete</button>
+                                </td>
+                            </tr>
+                        <?php }
+                    } else { ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($row['id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td>
-                                <!-- Delete Button that triggers Bootstrap modal -->
-                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $row['id']; ?>">
-                                    Delete
-                                </button>
-
-                                <!-- Bootstrap Modal for delete confirmation -->
-                                <div class="modal fade" id="deleteModal<?php echo $row['id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $row['id']; ?>" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteModalLabel<?php echo $row['id']; ?>">Confirm Delete</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Are you sure you want to delete the medicine: <strong><?php echo htmlspecialchars($row['name']); ?></strong>?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <a href="deleteMedicine.php?id=<?php echo $row['id']; ?>" class="btn btn-danger">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
+                            <td colspan="3" class="text-warning text-center">No medicines found.</td>
                         </tr>
                     <?php } ?>
                 </tbody>
             </table>
-        <?php } else { ?>
-            <p>No medicines found.</p>
-        <?php } ?>
+        </div>
     </div>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Live search
+        $(document).ready(function () {
+            $('#search').on('input', function () {
+                const searchValue = $(this).val();
+                $.ajax({
+                    url: 'searchMedicines.php',
+                    type: 'GET',
+                    data: { search: searchValue },
+                    success: function (data) {
+                        $('#medicinesTable').html(data);
+                    },
+                    error: function () {
+                        alert('An error occurred while fetching data.');
+                    }
+                });
+            });
+        });
+
+        // Confirm delete (placeholder for actual delete functionality)
+        function confirmDelete(id) {
+            if (confirm('Are you sure you want to delete this medicine?')) {
+                window.location.href = 'deleteMedicine.php?id=' + id;
+            }
+        }
+    </script>
 </body>
 </html>

@@ -289,7 +289,10 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <option value="Evening">Evening</option>
                         <option value="Morning-Evening">Morning-Evening</option>
                         <option value="Afternoon-Evening">Afternoon-Evening</option>
+                        <option value="Morning-Afternoon-Evening">Empty Stomach</option>
+                        <option value="Morning-Afternoon-Evening">Before Sleeping</option>
                         <option value="Morning-Afternoon-Evening">Morning-Afternoon-Evening</option>
+
                     </select>
                     <button class="btn custom-btn" type="button" onclick="addMedicine()">Add</button>
                 </div>

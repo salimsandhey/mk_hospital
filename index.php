@@ -70,9 +70,11 @@ if ($yesterdaysEarnings > 0) {
     <!-- Include the header/navbar here -->
     <?php include "header.php"; ?>
 
-    <div class="welcome container-fix">
-        <h3>Welcome, <span class="d-name"><?php echo $_SESSION['name'] ?></span></h3>
-        <p>Have a nice day at work</p>
+    <div class="welcome container-fix d-flex justify-content-between">
+        <div>
+            <h3>Welcome, <span class="d-name"><?php echo $_SESSION['name'] ?></span></h3>
+            <p>Have a nice day at work</p>
+        </div>
     </div>
     <div class="container-fix dashboard-content">
         <div class="row">
@@ -143,7 +145,7 @@ if ($yesterdaysEarnings > 0) {
     ORDER BY p.id DESC
     LIMIT 5"; // Newest first
                     $result = mysqli_query($conn, $sql);
-    
+
                     // Check if there are results
                     if (mysqli_num_rows($result) > 0) {
                         // Fetch and display each row of data
