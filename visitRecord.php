@@ -291,6 +291,9 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <option value="Afternoon-Evening">Afternoon-Evening</option>
                         <option value="Morning-Afternoon-Evening">Empty Stomach</option>
                         <option value="Morning-Afternoon-Evening">Before Sleeping</option>
+                        <option value="Morning-Afternoon-Evening">4'o Clock</option>
+                        <option value="Morning-Afternoon-Evening">11'o Clock</option>
+                        <option value="Morning-Afternoon-Evening">SOS</option>
                         <option value="Morning-Afternoon-Evening">Morning-Afternoon-Evening</option>
 
                     </select>

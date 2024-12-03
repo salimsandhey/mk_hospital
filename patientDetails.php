@@ -142,7 +142,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                                     while ($visit = mysqli_fetch_assoc($visits_result)) {
                                         $medicines_string = $visit['medicines'];
                                         $medicines_list = explode(",", $medicines_string);
-    
+                                        
                                         echo "<tr class='clickable-row' data-href='visitDetails.php?visit_id=" . $visit['id'] . "'>";
                                         echo "<td>" . date("d M Y", strtotime($visit['visit_date'])) . "</td>";
                                         echo "<td>" . htmlspecialchars($visit['treatment']) . "</td>";
