@@ -1,3 +1,3 @@
 ## Collaborators
-- [@user1](https://github.com/salimsandhey)
-- [@user2](https://github.com/zaid-ali110)
+- [@ZaidAli](https://github.com/salimsandhey)
+- [@SalimSandhey](https://github.com/zaid-ali110)
