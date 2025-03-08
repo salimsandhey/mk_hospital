@@ -91,6 +91,11 @@ include 'addPatient.php';
                         <a class="nav-link" href="medicineDashboard.php">Medicine Dashboard</a>
                     </li>
 
+                    <!-- MIS Dashboard -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="misDashboard.php">MIS Dashboard</a>
+                    </li>
+
                     <!-- Add New Patient Button -->
                     <li class="nav-item">
                         <a class="btn custom-btn ms-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">Add New

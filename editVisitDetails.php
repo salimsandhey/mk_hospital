@@ -59,6 +59,8 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
         .xray-thumbnail {
             width: 100px;
             height: auto;
+            display: block;
+            margin-bottom: 5px;
         }
 
         .xray-delete-btn {
@@ -70,11 +72,19 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
 
         .xray-image {
             width: fit-content;
-            margin-right: 10px;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: inline-block;
+            vertical-align: top;
         }
 
         .xray-cont {
             display: flex;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -128,71 +138,42 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
                 ?>
             </div>
 
-            <!-- Medicines (Search and Add) -->
-            <div class="mb-3">
-                <label for="medicines" class="form-label">Medicines Prescribed</label>
-                <div class="input-group mb-3">
-                    <input type="text" id="medicine_search" class="form-control" placeholder="Search Medicine"
-                        oninput="searchMedicines()">
-                    <input type="number" id="medicine_quantity" class="form-control" placeholder="Quantity" min="1">
-                    <button class="btn custom-btn" type="button" onclick="addMedicine()">Add</button>
-                </div>
-                <div id="medicine_results"></div>
-
-                <ul id="medicines_list" class="list-group mt-3">
-                    <?php
-                    $medicines = explode(', ', $visit['medicines']);
-                    foreach ($medicines as $medicine) {
-                        echo "<li class='list-group-item d-flex justify-content-between align-items-center'>$medicine
-                            <button class='btn btn-danger btn-sm' onclick='this.parentElement.remove()'>Remove</button>
-                        </li>";
-                    }
-                    ?>
-                </ul>
-                <input type="hidden" id="medicines_input" name="medicines" value="<?php echo $visit['medicines']; ?>">
-            </div>
-
             <!-- X-ray Section -->
-            <!-- <div class="mb-3 form-check">
+            <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="xray_checkbox" name="xray" <?php echo $visit['xray_taken'] ? 'checked' : ''; ?> onclick="toggleXrayDetails()">
                 <label class="form-check-label" for="xray_checkbox">X-ray Taken</label>
-            </div> -->
+            </div>
 
-            <!-- <div id="xray_details_container" style="display: <?php echo $visit['xray_taken'] ? 'block' : 'none'; ?>;">
+            <div id="xray_details_container" style="display: <?php echo $visit['xray_taken'] ? 'block' : 'none'; ?>;">
                 <div class="mb-3">
                     <label for="xray_details" class="form-label">X-ray Details</label>
-                    <textarea class="form-control" name="xray_details"
-                        rows="3"><?php echo $visit['xray_details']; ?></textarea>
-                </div> -->
+                    <textarea class="form-control" name="xray_details" rows="3"><?php echo $visit['xray_details']; ?></textarea>
+                </div>
 
                 <!-- Show previously uploaded X-ray images -->
-                
-                    <!-- <label for="previous_xrays" class="form-label">Previous X-ray Images</label><br> -->
-
-                    <?php foreach ($xray_images as $xray) { ?>
-                        <?php
-                        // echo "<pre>";
-                        // print_r($xray)
-                        ?>
-                        <!-- <div class="xray-image mb-2">
-                            <img src="<?php echo htmlspecialchars($xray['image_path']); ?>" class="xray-thumbnail">
-
-                            <form action="deleteImage.php" method="post">
-                                <input type="hidden" name="image_id" value="<?php echo htmlspecialchars($xray['id']); ?>">
-                                <input type="hidden" name="visit_id" value="<?php echo htmlspecialchars($visit_id); ?>">
-                                <button type="submit" class="delete_image_button">Delete</button>
-                            </form>
-                        </div> -->
-                    <?php } ?>
+                <div class="mb-3">
+                    <label for="previous_xrays" class="form-label">X-ray Images</label>
+                    <div class="xray-cont">
+                        <?php foreach ($xray_images as $xray) { ?>
+                            <div class="xray-image mb-2">
+                                <img src="<?php echo htmlspecialchars($xray['image_path']); ?>" class="xray-thumbnail">
+                                <form action="deleteImage.php" method="post" class="delete-xray-form">
+                                    <input type="hidden" name="image_id" value="<?php echo htmlspecialchars($xray['id']); ?>">
+                                    <input type="hidden" name="visit_id" value="<?php echo htmlspecialchars($visit_id); ?>">
+                                    <button type="button" class="btn btn-danger btn-sm mt-2 delete-xray-btn" data-image-id="<?php echo htmlspecialchars($xray['id']); ?>" data-visit-id="<?php echo htmlspecialchars($visit_id); ?>">Delete</button>
+                                </form>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
 
                 <!-- Upload new X-ray images -->
-                <!-- <div class="mb-3">
+                <div class="mb-3">
                     <label for="xray_file" class="form-label">Add New X-ray Images</label>
                     <input type="file" class="form-control" id="xray_file" name="xray_file">
                     <button type="button" class="btn btn-success mt-2" id="add_image_button">Add Image</button>
-                </div> -->
-            <!-- </div> -->
-
+                </div>
+            </div>
 
             <!-- Test Fields -->
             <div class="mb-3 form-check">
@@ -223,115 +204,49 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
                 <input type="number" class="form-control" name="fees" value="<?php echo $visit['fees']; ?>" required>
             </div>
 
+            <!-- Medicines (Search and Add) -->
+            <div class="mb-3">
+                <label for="medicines" class="form-label">Medicines Prescribed</label>
+                <div class="input-group mb-3">
+                    <input type="text" id="medicine_search" class="form-control" placeholder="Search Medicine"
+                        oninput="searchMedicines()">
+                    <input type="number" id="medicine_quantity" class="form-control" placeholder="Quantity" min="1">
+                    <select id="medicine_timing" class="form-select">
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
+                        <option value="Evening">Evening</option>
+                        <option value="Morning-Evening">Morning-Evening</option>
+                        <option value="Afternoon-Evening">Afternoon-Evening</option>
+                        <option value="Empty Stomach">Empty Stomach</option>
+                        <option value="Before Sleeping">Before Sleeping</option>
+                        <option value="4'o Clock">4'o Clock</option>
+                        <option value="11'o Clock">11'o Clock</option>
+                        <option value="SOS">SOS</option>
+                        <option value="Morning-Afternoon-Evening">Morning-Afternoon-Evening</option>
+                    </select>
+                    <button class="btn custom-btn" type="button" onclick="addMedicine()">Add</button>
+                </div>
+                <div id="medicine_results"></div>
+
+                <ul id="medicines_list" class="list-group mt-3">
+                    <?php
+                    $medicines = explode(', ', $visit['medicines']);
+                    foreach ($medicines as $medicine) {
+                        echo "<li class='list-group-item d-flex justify-content-between align-items-center'>$medicine
+                            <button type='button' class='btn btn-danger btn-sm' onclick='this.parentElement.remove(); updateMedicines();'>Remove</button>
+                        </li>";
+                    }
+                    ?>
+                </ul>
+                <input type="hidden" id="medicines_input" name="medicines" value="<?php echo $visit['medicines']; ?>">
+            </div>
+
             <!-- Submit Button -->
             <button type="submit" id="saveVisitBtn" class="btn custom-btn">Update Visit</button>
         </form>
     </div>
 
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Automatically populate medicines in hidden input when the form is submitted
-        document.querySelector('form').addEventListener('submit', function () {
-            const medicines = [];
-            document.querySelectorAll('#medicines_list li').forEach(item => {
-                medicines.push(item.firstChild.textContent);
-            });
-            document.getElementById('medicines_input').value = medicines.join(', ');
-        });
-    </script>
-    <script>
-        // Add image via AJAX
-        document.getElementById('add_image_button').addEventListener('click', function () {
-            let fileInput = document.getElementById('xray_file');
-            let file = fileInput.files[0];
-
-            if (file) {
-                let formData = new FormData();
-                formData.append('xray_file', file);
-                formData.append('visit_id', '<?php echo $visit_id; ?>'); // Include visit ID
-                formData.append('patient_id', '<?php echo $patient_id; ?>'); // Include patient ID
-
-                // Send AJAX request to upload image
-                fetch('uploadImage.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Refresh the page to show the newly added image
-                            window.location.reload();
-                        } else {
-                            alert('Image upload failed!');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error uploading image:', error);
-                    });
-            } else {
-                alert('Please select an image first.');
-            }
-        });
-        // Add event listener for delete buttons
-
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function (e) {
-            // Validate and prepare for submission
-            if (form.checkValidity()) {
-                const saveButton = document.getElementById('saveVisitBtn');
-                saveButton.disabled = true;
-                saveButton.innerHTML = 'Saving...';
-
-                // Populate medicines input
-                const medicines = [];
-                document.querySelectorAll('#medicines_list li').forEach(item => {
-                    medicines.push(item.firstChild.textContent);
-                });
-                document.getElementById('medicines_input').value = medicines.join(', ');
-            } else {
-                e.preventDefault();
-            }
-        });
-    </script>
-    <script>
-        // Automatically set today's date in the date input
-        // window.onload = function () {
-        //     const today = new Date().toISOString().split('T')[0];
-        //     document.getElementById('visit_date').value = today;
-        // };
-        function toggleXrayDetails() {
-            const xrayDetails = document.getElementById('xray_details_container');
-            const xrayUpload = document.getElementById('xray_upload_container');
-            if (document.getElementById('xray_checkbox').checked) {
-                xrayDetails.style.display = 'block';
-                xrayUpload.style.display = 'block';
-            } else {
-                xrayDetails.style.display = 'none';
-                xrayUpload.style.display = 'none';
-            }
-        }
-        function toggleTestResults() {
-            const testResultsContainer = document.getElementById('test_results_container');
-            if (document.getElementById('test_results_checkbox').checked) {
-                testResultsContainer.style.display = 'block';
-            } else {
-                testResultsContainer.style.display = 'none';
-            }
-        }
-    </script>
-    <script>
-        // Add an event listener to the form submission
-        document.querySelector('form').addEventListener('submit', function (e) {
-            // Check if the form is valid
-            if (this.checkValidity()) {
-                const saveButton = document.getElementById('saveVisitBtn');
-                saveButton.disabled = true; // Disable the button
-                saveButton.innerHTML = 'Saving...'; // Optionally change the button text
-            } else {
-                e.preventDefault(); // Prevent form submission if invalid
-            }
-        });
-    </script>
     <script>
         // Function to fetch medicines based on search input
         function searchMedicines() {
@@ -367,21 +282,23 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
             }
         }
 
-        // JavaScript to handle dynamic medicine addition with quantity
+        // JavaScript to handle dynamic medicine addition with quantity and timing
         function addMedicine() {
             const medicineName = $('#medicine_search').val();
             const quantity = $('#medicine_quantity').val();
+            const timing = $('#medicine_timing').val();
 
-            if (medicineName && quantity > 0) {
+            if (medicineName && quantity > 0 && timing) {
                 // Create a new list item
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.textContent = `${medicineName} - Quantity: ${quantity}`;
+                li.textContent = `${medicineName} - Quantity: ${quantity} - Timing: ${timing}`;
 
                 // Add delete button to list item
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Remove';
                 deleteBtn.className = 'btn btn-danger btn-sm';
+                deleteBtn.type = 'button';
                 deleteBtn.onclick = function () {
                     li.remove();
                     updateMedicines();
@@ -395,11 +312,11 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
                 // Update the hidden input with the new medicines list
                 updateMedicines();
 
-                // Reset quantity input for the next entry
+                // Reset inputs for the next entry
                 $('#medicine_quantity').val('');
                 $('#medicine_search').val('');
             } else {
-                alert("Please select a medicine and enter a valid quantity.");
+                alert("Please select a medicine, enter a valid quantity, and select a timing.");
             }
         }
 
@@ -412,6 +329,122 @@ $patient_id = $visit['patient_id']; // Retrieve patient ID for redirection or us
             });
             document.getElementById('medicines_input').value = medicines.join(', ');
         }
+
+        // Automatically populate medicines in hidden input when the form is submitted
+        document.querySelector('form').addEventListener('submit', function () {
+            updateMedicines();
+        });
+    </script>
+    <script>
+        // Automatically set today's date in the date input
+        // window.onload = function () {
+        //     const today = new Date().toISOString().split('T')[0];
+        //     document.getElementById('visit_date').value = today;
+        // };
+        function toggleXrayDetails() {
+            const xrayDetails = document.getElementById('xray_details_container');
+            if (document.getElementById('xray_checkbox').checked) {
+                xrayDetails.style.display = 'block';
+            } else {
+                xrayDetails.style.display = 'none';
+            }
+        }
+        function toggleTestResults() {
+            const testResultsContainer = document.getElementById('test_results_container');
+            if (document.getElementById('test_results_checkbox').checked) {
+                testResultsContainer.style.display = 'block';
+            } else {
+                testResultsContainer.style.display = 'none';
+            }
+        }
+    </script>
+    <script>
+        // Add an event listener to the form submission
+        document.querySelector('form').addEventListener('submit', function (e) {
+            // Check if the form is valid
+            if (this.checkValidity()) {
+                const saveButton = document.getElementById('saveVisitBtn');
+                saveButton.disabled = true; // Disable the button
+                saveButton.innerHTML = 'Saving...'; // Optionally change the button text
+            } else {
+                e.preventDefault(); // Prevent form submission if invalid
+            }
+        });
+    </script>
+    <script>
+        // Add image via AJAX
+        document.getElementById('add_image_button').addEventListener('click', function () {
+            let fileInput = document.getElementById('xray_file');
+            let file = fileInput.files[0];
+
+            if (file) {
+                let formData = new FormData();
+                formData.append('xray_file', file);
+                formData.append('visit_id', '<?php echo $visit_id; ?>'); // Include visit ID
+                formData.append('patient_id', '<?php echo $patient_id; ?>'); // Include patient ID
+
+                // Send AJAX request to upload image
+                fetch('uploadImage.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Refresh the page to show the newly added image
+                            window.location.reload();
+                        } else {
+                            alert('Image upload failed!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error uploading image:', error);
+                    });
+            } else {
+                alert('Please select an image first.');
+            }
+        });
+    </script>
+    <script>
+        // Add event listeners for delete buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-xray-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    const visitId = this.getAttribute('data-visit-id');
+                    
+                    if (confirm('Are you sure you want to delete this X-ray image?')) {
+                        // Create form data
+                        const formData = new FormData();
+                        formData.append('image_id', imageId);
+                        formData.append('visit_id', visitId);
+                        
+                        // Send AJAX request to delete the image
+                        fetch('deleteImage.php', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Reload the page after successful deletion
+                                window.location.reload();
+                            } else {
+                                alert('Failed to delete the image: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting image:', error);
+                            alert('Failed to delete the image. Please try again.');
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
