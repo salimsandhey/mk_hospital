@@ -17,7 +17,7 @@ if (isset($_FILES['xray_file']) && isset($_POST['visit_id']) && isset($_POST['pa
     $targetFilePath = $targetDir . $newFileName;
 
     // Allow only specific file formats
-    $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
+    $allowTypes = ['jpg', 'png', 'jpeg', 'gif', 'heic', 'HEIC'];
     if (in_array($fileType, $allowTypes)) {
         // Move file to the uploads directory
         if (move_uploaded_file($_FILES["xray_file"]["tmp_name"], $targetFilePath)) {
@@ -26,6 +26,12 @@ if (isset($_FILES['xray_file']) && isset($_POST['visit_id']) && isset($_POST['pa
             $insert->bind_param("iis", $visit_id, $patient_id, $targetFilePath);
 
             if ($insert->execute()) {
+                // Update the xray_taken flag in the visits table
+                $updateVisit = $conn->prepare("UPDATE visits SET xray_taken = 1 WHERE id = ?");
+                $updateVisit->bind_param("i", $visit_id);
+                $updateVisit->execute();
+                $updateVisit->close();
+                
                 $response['success'] = true;
                 $response['image_path'] = $targetFilePath;
                 $response['image_id'] = $insert->insert_id;

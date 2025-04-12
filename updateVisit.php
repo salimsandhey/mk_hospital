@@ -32,10 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $xray_taken = isset($_POST['xray']) ? 1 : 0;
     $xray_details = isset($_POST['xray_details']) ? $_POST['xray_details'] : '';
     $fees = isset($_POST['fees']) ? $_POST['fees'] : 0;
-    $s_uric_acid = isset($_POST['s_uric_acid']) ? $_POST['s_uric_acid'] : '';
-    $calcium = isset($_POST['calcium']) ? $_POST['calcium'] : '';
-    $esr = isset($_POST['esr']) ? $_POST['esr'] : '';
-    $cholesterol = isset($_POST['cholesterol']) ? $_POST['cholesterol'] : '';
+    
+    // Handle test results - convert empty strings to NULL
+    $s_uric_acid = (!empty($_POST['s_uric_acid'])) ? $_POST['s_uric_acid'] : null;
+    $calcium = (!empty($_POST['calcium'])) ? $_POST['calcium'] : null;
+    $esr = (!empty($_POST['esr'])) ? $_POST['esr'] : null;
+    $cholesterol = (!empty($_POST['cholesterol'])) ? $_POST['cholesterol'] : null;
     
     // Log the processed data
     logMessage("Processed data: visit_id=$visit_id, patient_id=$patient_id, medicines=$medicines");

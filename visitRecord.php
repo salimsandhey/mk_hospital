@@ -369,7 +369,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                             // PHP code to fetch and display previous visits for this patient
                             include 'dbConnect.php';
                             $patient_id = $_GET['id'];
-                            $sql = "SELECT visit_date, treatment, medicines FROM visits WHERE patient_id = '$patient_id' ORDER BY visit_date DESC";
+                            $sql = "SELECT visit_date, treatment, medicines, fees FROM visits WHERE patient_id = '$patient_id' ORDER BY visit_date DESC";
                             $result = mysqli_query($conn, $sql);
 
                             if (mysqli_num_rows($result) > 0) {
@@ -379,6 +379,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     echo "<p><span class='highlight'>Date:</span> " . $row['visit_date'] . "</p>";
                                     echo "<p><span class='highlight'>Treatment:</span> " . $row['treatment'] . "</p>";
                                     echo "<p><span class='highlight'>Medicines:</span> " . $row['medicines'] . "</p>";
+                                    echo "<p><span class='highlight'>Fees:</span> " . $row['fees'] . "</p>";
                                     echo "</div>";
                                 }
 

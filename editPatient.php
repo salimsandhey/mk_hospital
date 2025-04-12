@@ -17,11 +17,12 @@ $patient = mysqli_fetch_assoc($patient_result);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $age = $_POST['age'];
+    $gender = $_POST['gender'];
     $address = $_POST['address'];
     $disease = $_POST['disease'];
     $contact = $_POST['contact'];  // Get the updated phone number
 
-    $update_sql = "UPDATE patient SET name='$name', age='$age', address='$address', disease='$disease', contact='$contact' WHERE id = $patient_id";
+    $update_sql = "UPDATE patient SET name='$name', age='$age', gender='$gender', address='$address', disease='$disease', contact='$contact' WHERE id = $patient_id";
     
     if (mysqli_query($conn, $update_sql)) {
         echo "<div class='alert alert-success'>Profile updated successfully.</div>";
@@ -40,57 +41,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Patient Profile</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Responsive styles for small screens */
+        @media (max-width: 768px) {
+            .container-fix {
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            
+            .card-body .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .button-group .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <?php
-        include 'header.php';
-    ?>
-    <div class="container mt-5">
+    <?php include 'header.php'; ?>
+    
+    <div class="container-fix mb-4">
         <!-- Edit Profile Form -->
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4>Edit Patient Profile</h4>
+        <div class="card profile-box">
+            <div class="profile-head">
+                <h5 class="card-title">Edit Patient Profile</h5>
+                <h6 class="card-subtitle primary-color">Patient ID: <?php echo $patient_id ?></h6>
             </div>
             <div class="card-body">
                 <!-- Form to edit patient details -->
                 <form method="POST" action="">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="<?php echo $patient['name']; ?>" required>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 for="name" class="form-label">Name</h6>
+                            <input type="text" class="form-control" id="name" name="name" value="<?php echo $patient['name']; ?>" required>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <h6 for="age" class="form-label">Age</h6>
+                            <input type="number" class="form-control" id="age" name="age" value="<?php echo $patient['age']; ?>" required>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <h6 for="gender" class="form-label">Gender</h6>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="male" <?php echo ($patient['gender'] == 'male') ? 'selected' : ''; ?>>Male</option>
+                                <option value="female" <?php echo ($patient['gender'] == 'female') ? 'selected' : ''; ?>>Female</option>
+                                <option value="other" <?php echo ($patient['gender'] == 'other') ? 'selected' : ''; ?>>Other</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="age" class="form-label">Age</label>
-                        <input type="number" class="form-control" id="age" name="age" value="<?php echo $patient['age']; ?>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" required><?php echo $patient['address']; ?></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="disease" class="form-label">Disease</label>
-                        <textarea class="form-control" id="disease" name="disease" rows="3" required><?php echo $patient['disease']; ?></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="contact" class="form-label">Phone Number</label>
+                        <h6 for="contact" class="form-label">Phone Number</h6>
                         <input type="text" class="form-control" id="contact" name="contact" value="<?php echo $patient['contact']; ?>" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
-                    <a href="patientDetails.php?id=<?php echo $patient_id; ?>" class="btn btn-secondary">Cancel</a>
+                    <div class="mb-3">
+                        <h6 for="address" class="form-label">Address</h6>
+                        <textarea class="form-control" id="address" name="address" rows="2" required><?php echo $patient['address']; ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 for="disease" class="form-label">Disease</h6>
+                        <textarea class="form-control" id="disease" name="disease" rows="2" required><?php echo $patient['disease']; ?></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end button-group mt-4">
+                        <a href="patientDetails.php?id=<?php echo $patient_id; ?>" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn custom-btn">Update Profile</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 

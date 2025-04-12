@@ -476,3 +476,24 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Add user_roles table
+CREATE TABLE IF NOT EXISTS user_roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default roles
+INSERT INTO user_roles (role_name) VALUES 
+('super_admin'),
+('admin'),
+('staff');
+
+-- Add role column to users table if it exists
+ALTER TABLE users 
+ADD COLUMN role_id INT,
+ADD FOREIGN KEY (role_id) REFERENCES user_roles(id);
+
+-- Update existing users to have a default role (you may want to change this)
+UPDATE users SET role_id = (SELECT id FROM user_roles WHERE role_name = 'staff');

@@ -1,5 +1,12 @@
 <?php
 include 'auth.php';
+
+// Initialize or reset pagination parameters in session when directly accessing this page
+if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+    // This is a direct page load, not an AJAX request
+    $_SESSION['patient_page'] = 1;
+    $_SESSION['patient_search'] = '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,6 +44,26 @@ include 'auth.php';
             transform: translateY(-50%);
         }
 
+        #loadMoreContainer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .no-more-patients {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #6c757d;
+        }
+
         @media (max-width: 576px) {
             .search-bar {
                 width: 100%;
@@ -58,12 +85,12 @@ include 'auth.php';
                     <div class="search-bar position-relative ">
                         <i class="fas fa-search"></i>
                         <input type="text" id="searchPatient" class="form-control search-input"
-                            placeholder="Search by ID, Name, or Phone" onkeyup="searchPatients()">
+                            placeholder="Search by ID, Name, or Phone">
                     </div>
-                    <a class=" add-btn ms-2" href="newRecord.php">
+                    <a class="add-btn ms-2" href="newRecord.php">
                         <i class="fas fa-plus"></i>
                     </a>
-                    <a class=" add-btn ms-2" id="refresh-page" >
+                    <a class="add-btn ms-2" id="refresh-page" >
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </a>
                 </div>
@@ -71,80 +98,143 @@ include 'auth.php';
         </div>
 
 
-
-        <table class="table table-hover all-patients-table">
-            <thead>
-                <tr class="table-head">
-                    <th scope="col">Id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Mobile</th>
-                    <th scope="col" class="hide">Age</th>
-                    <th scope="col" class="hide">Address</th>
-                    <th scope="col" class="hide">Last Visit</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody id="patientTableBody">
-                <?php
-                include "dbConnect.php";
-                $sql = "SELECT p.*, MAX(v.visit_date) AS last_visit
-                            FROM patient p
-                            LEFT JOIN visits v ON p.id = v.patient_id
-                            GROUP BY p.id
-                            ORDER BY p.id DESC"; // Newest first
-                $result = mysqli_query($conn, $sql);
-
-                // Check if there are results
-                if (mysqli_num_rows($result) > 0) {
-                    // Fetch and display each row of data
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr class='' onclick=\"window.location.href='patientDetails.php?id=" . $row["id"] . "'\" style='cursor:pointer;'>";
-                        echo "<td class='bold'>" . $row["id"] . "</td>";
-                        echo "<td>" . $row["name"] . "</td>";
-                        echo "<td>" . $row["contact"] . "</td>";
-                        echo "<td class='hide'>" . $row["age"] . "</td>";
-                        echo "<td class='hide'>" . $row["address"] . "</td>";
-                        echo "<td class='hide'>" . ($row["last_visit"] ? $row["last_visit"] : 'N/A') . "</td>"; // Last visit date
-                        echo "<td><a href='visitRecord.php?id=" . $row["id"] . "' class='btn custom-btn'>New Visit
-                        </a></td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='7' class='text-center'>No patients found</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover all-patients-table">
+                <thead>
+                    <tr class="table-head">
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Mobile</th>
+                        <th scope="col" class="hide">Age</th>
+                        <th scope="col">Address</th>
+                        <th scope="col" class="hide">Last Visit</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                    <!-- Patient data will be loaded here via AJAX -->
+                </tbody>
+            </table>
+            
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading patients...</p>
+            </div>
+            
+            <div class="no-more-patients" id="noMorePatientsMessage">
+                <p>No more patients to load</p>
+            </div>
+            
+            <div id="loadMoreContainer">
+                <button id="loadMoreButton" class="btn custom-btn">
+                    <i class="fas fa-sync-alt me-2"></i>Load More
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
-        function searchPatients() {
-            const input = document.getElementById('searchPatient').value.toLowerCase();
-            const table = document.getElementById('patientTableBody');
-            const rows = table.getElementsByTagName('tr');
-
-            for (let i = 0; i < rows.length; i++) {
-                const idCell = rows[i].getElementsByTagName('td')[0];
-                const nameCell = rows[i].getElementsByTagName('td')[1];
-                const phoneCell = rows[i].getElementsByTagName('td')[2];
-
-                if (nameCell || idCell || phoneCell) {
-                    const idText = idCell.textContent || idCell.innerText;
-                    const nameText = nameCell.textContent || nameCell.innerText;
-                    const phoneText = phoneCell.textContent || phoneCell.innerText;
-
-                    // Check if the input matches the ID, Name, or Phone number
-                    if (idText.toLowerCase().indexOf(input) > -1 || nameText.toLowerCase().indexOf(input) > -1 || phoneText.toLowerCase().indexOf(input) > -1) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
+        // Variables to manage pagination and search
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMorePages = true;
+        let searchQuery = '';
+        let debounceTimer;
+        
+        // Function to load patients via AJAX
+        function loadPatients(page = 1, search = '') {
+            if (isLoading || (!hasMorePages && page > 1)) return;
+            
+            isLoading = true;
+            
+            // Show loading spinner if loading more pages
+            if (page > 1) {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                document.getElementById('loadMoreButton').disabled = true;
             }
+            
+            // Prepare form data for the request
+            const formData = new FormData();
+            formData.append('page', page);
+            formData.append('search', search);
+            
+            // Make AJAX request
+            fetch('fetchPatients.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('loadMoreButton').disabled = false;
+                
+                // Update the table with new data
+                if (page === 1) {
+                    document.getElementById('patientTableBody').innerHTML = data.html;
+                } else {
+                    document.getElementById('patientTableBody').innerHTML += data.html;
+                }
+                
+                // Update pagination state
+                currentPage = data.currentPage;
+                hasMorePages = data.hasMore;
+                
+                // Show or hide "No more patients" message
+                if (!hasMorePages) {
+                    document.getElementById('noMorePatientsMessage').style.display = 'block';
+                    document.getElementById('loadMoreContainer').style.display = 'none';
+                } else {
+                    document.getElementById('noMorePatientsMessage').style.display = 'none';
+                    document.getElementById('loadMoreContainer').style.display = 'flex';
+                }
+                
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error loading patients:', error);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('loadMoreButton').disabled = false;
+                isLoading = false;
+                alert('Error loading patients. Please try again.');
+            });
         }
-        document.querySelector("#refresh-page").addEventListener("click",function(e){
-            window.location.reload();
+        
+        // Function to handle search with debounce
+        function searchPatients() {
+            clearTimeout(debounceTimer);
+            
+            debounceTimer = setTimeout(() => {
+                searchQuery = document.getElementById('searchPatient').value.trim();
+                currentPage = 1;
+                hasMorePages = true;
+                loadPatients(currentPage, searchQuery);
+            }, 500); // Debounce delay of 500ms
+        }
+        
+        // Load patients when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPatients(currentPage, searchQuery);
+            
+            // Event listeners
+            document.getElementById('searchPatient').addEventListener('input', searchPatients);
+            
+            document.getElementById('loadMoreButton').addEventListener('click', function() {
+                if (!isLoading && hasMorePages) {
+                    loadPatients(currentPage + 1, searchQuery);
+                }
+            });
+            
+            document.querySelector("#refresh-page").addEventListener("click", function(e) {
+                currentPage = 1;
+                searchQuery = '';
+                document.getElementById('searchPatient').value = '';
+                hasMorePages = true;
+                loadPatients(currentPage, searchQuery);
+            });
         });
     </script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -2,6 +2,9 @@
 include 'auth.php';
 include "dbConnect.php"; // Include the database connection
 
+// Require super admin access for this page
+requireSuperAdmin();
+
 // Date range filter
 $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d', strtotime('-30 days'));
 $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
@@ -157,7 +160,10 @@ $recentMedicinesResult = mysqli_query($conn, $recentMedicinesQuery);
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Medicine Report</h2>
-            <a href="misDashboard.php" class="btn custom-btn">Back to Dashboard</a>
+            <div>
+                <a href="misDashboard.php" class="btn custom-btn me-2">Back to Dashboard</a>
+                <a href="superadmin_logout.php" class="btn btn-danger">Logout Super Admin</a>
+            </div>
         </div>
         
         <!-- Date Range Filter -->
@@ -265,7 +271,8 @@ $recentMedicinesResult = mysqli_query($conn, $recentMedicinesQuery);
             </div>
         </div>
     </div>
-
+    <!-- End container -->
+    
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         // Top Medicines Chart
@@ -364,4 +371,5 @@ $recentMedicinesResult = mysqli_query($conn, $recentMedicinesQuery);
         });
     </script>
 </body>
-</html> 
+</html>
+<?php ob_end_flush(); ?> 

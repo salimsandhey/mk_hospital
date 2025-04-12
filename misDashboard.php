@@ -2,6 +2,9 @@
 include 'auth.php';
 include "dbConnect.php"; // Include the database connection
 
+// Require super admin access for this page
+requireSuperAdmin();
+
 // Date range filter
 $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d', strtotime('-30 days'));
 $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
@@ -129,7 +132,10 @@ while ($row = mysqli_fetch_assoc($monthlyRevenueResult)) {
     <?php include 'header.php'; ?>
 
     <div class="container mt-4">
-        <h2 class="mb-4">Management Information System Dashboard</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Management Information System Dashboard</h2>
+            <a href="superadmin_logout.php" class="btn btn-danger">Logout Super Admin</a>
+        </div>
         
         <!-- Date Range Filter -->
         <div class="date-filter">
@@ -260,59 +266,82 @@ while ($row = mysqli_fetch_assoc($monthlyRevenueResult)) {
             </div>
         </div>
     </div>
-
+    <!-- End of container -->
+    
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
-        // Chart for Monthly Visits
+        // Visits Chart
         const visitsCtx = document.getElementById('visitsChart').getContext('2d');
         const visitsChart = new Chart(visitsCtx, {
             type: 'line',
             data: {
                 labels: <?php echo json_encode(array_column($monthlyVisits, 'month')); ?>,
                 datasets: [{
-                    label: 'Number of Visits',
-                    data: <?php echo json_encode(array_column($monthlyVisits, 'visit_count')); ?>,
-                    backgroundColor: 'rgba(52, 60, 146, 0.2)',
-                    borderColor: 'rgba(52, 60, 146, 1)',
-                    borderWidth: 2,
-                    tension: 0.1
+                    label: 'Visits',
+                    data: [<?php echo implode(', ', array_map(function($item) { return $item['visit_count']; }, $monthlyVisits)); ?>],
+                    borderColor: '#343c92',
+                    backgroundColor: 'rgba(52, 60, 146, 0.1)',
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
                     }
                 }
             }
         });
         
-        // Chart for Monthly Revenue
+        // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(revenueCtx, {
-            type: 'bar',
+            type: 'line',
             data: {
-                labels: <?php echo json_encode(array_column($monthlyRevenue, 'month')); ?>,
+                labels: [<?php echo implode(', ', array_map(function($item) { return "'" . date('M Y', strtotime($item['month'] . '-01')) . "'"; }, $monthlyRevenue)); ?>],
                 datasets: [{
-                    label: 'Revenue (₹)',
-                    data: <?php echo json_encode(array_column($monthlyRevenue, 'revenue')); ?>,
-                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
-                    borderColor: 'rgba(40, 167, 69, 1)',
-                    borderWidth: 1
+                    label: 'Revenue',
+                    data: [<?php echo implode(', ', array_map(function($item) { return $item['revenue']; }, $monthlyRevenue)); ?>],
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
                     }
                 }
             }
         });
     </script>
 </body>
-</html> 
+</html>
+<?php ob_end_flush(); ?> 

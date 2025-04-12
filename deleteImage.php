@@ -32,8 +32,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     @unlink($image_path);
                 }
                 
+                // Check if there are any remaining images for this visit
+                $check_stmt = $conn->prepare("SELECT COUNT(*) as count FROM xray_images WHERE visit_id = ?");
+                $check_stmt->bind_param("i", $visit_id);
+                $check_stmt->execute();
+                $check_result = $check_stmt->get_result();
+                $remaining_count = $check_result->fetch_assoc()['count'];
+                $check_stmt->close();
+                
+                // If no images remain, update xray_taken in visits table to 0 only if xray_details is empty
+                if ($remaining_count == 0) {
+                    $details_check = $conn->prepare("SELECT xray_details FROM visits WHERE id = ?");
+                    $details_check->bind_param("i", $visit_id);
+                    $details_check->execute();
+                    $details_result = $details_check->get_result();
+                    $xray_details = $details_result->fetch_assoc()['xray_details'];
+                    $details_check->close();
+                    
+                    // Only update xray_taken if xray_details is also empty
+                    if (empty($xray_details)) {
+                        $update_stmt = $conn->prepare("UPDATE visits SET xray_taken = 0 WHERE id = ?");
+                        $update_stmt->bind_param("i", $visit_id);
+                        $update_stmt->execute();
+                        $update_stmt->close();
+                    }
+                }
+                
                 $response['success'] = true;
                 $response['message'] = 'Image deleted successfully';
+                $response['remaining_count'] = $remaining_count;
                 
                 if (!$isAjax) {
                     // Redirect to editvisitdetails.php with the visit_id after deletion for regular form submissions

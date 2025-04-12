@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ALL);
+// Set error reporting to ignore deprecation notices
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('display_errors', 1);
 include 'auth.php';
 
@@ -24,6 +25,23 @@ $visit = $result->fetch_assoc();
 if (!$visit) {
     echo "Visit not found!";
     exit;
+}
+
+// Pre-process the visit data to handle NULL values
+$nullable_fields = ['xray_details', 'medicines', 'treatment_options'];
+foreach ($nullable_fields as $field) {
+    if (!isset($visit[$field]) || $visit[$field] === null) {
+        $visit[$field] = '';
+    }
+}
+
+// Ensure test fields are properly handled
+$test_fields = ['s_uric_acid', 'calcium', 'esr', 'cholesterol'];
+foreach ($test_fields as $field) {
+    // Don't convert NULL to empty string for test fields
+    if (!isset($visit[$field])) {
+        $visit[$field] = null;
+    }
 }
 
 $patient_id = $visit['patient_id'];
@@ -53,6 +71,7 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
             padding: 8px;
             border: 1px solid #ccc;
             margin-top: -1px;
+            z-index: 1000;
             background-color: white;
         }
 
@@ -90,6 +109,23 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
             display: flex;
             flex-wrap: wrap;
         }
+        
+        .visit-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #2E37A4;
+        }
+
+        ul {
+            padding: 0 !important;
+        }
     </style>
 </head>
 
@@ -103,21 +139,22 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
 
             <!-- Visit Date -->
             <div class="mb-3">
-                <label for="visit_date" class="form-label">Visit Date</label>
+                <h6 for="visit_date" class="form-label">Visit Date</h6>
                 <input type="date" class="form-control" id="visit_date" name="visit_date" value="<?php echo htmlspecialchars($visit['visit_date']); ?>" required>
                 <div class="invalid-feedback">Please select a visit date.</div>
             </div>
 
             <!-- Treatment Description -->
             <div class="mb-3">
-                <label for="treatment" class="form-label">Treatment Description</label>
+                <h6 for="treatment" class="form-label">Treatment Description</h6>
                 <textarea class="form-control" id="treatment" name="treatment" rows="4" required><?php echo htmlspecialchars($visit['treatment']); ?></textarea>
                 <div class="invalid-feedback">Please enter treatment description.</div>
             </div>
 
             <!-- Treatment Options -->
             <div class="mb-3">
-                <label class="form-label">Specific Treatment Options</label>
+                <h6 class="form-label">Specific Treatment Options</h6>
+                <div class="row">
                 <?php
                 $treatment_options = explode(',', $visit['treatment_options']);
                 $treatment_list = [
@@ -135,12 +172,15 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 foreach ($treatment_list as $option) {
                     $option_id = strtolower(str_replace([' ', '(', ')', '+'], ['_', '', '', ''], $option));
                     $checked = in_array($option, $treatment_options) ? "checked" : "";
-                    echo "<div class='form-check'>
-                        <input class='form-check-input' type='checkbox' id='$option_id' name='treatment_options[]' value='$option' $checked>
-                        <label class='form-check-label' for='$option_id'>$option</label>
+                    echo "<div class='col-md-4 col-sm-6'>
+                        <div class='form-check'>
+                            <input class='form-check-input' type='checkbox' id='$option_id' name='treatment_options[]' value='$option' $checked>
+                            <label class='form-check-label' for='$option_id'>$option</label>
+                        </div>
                     </div>";
                 }
                 ?>
+                </div>
             </div>
 
             <!-- X-ray Section -->
@@ -153,7 +193,7 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 <!-- X-ray Details -->
                 <div class="mb-3">
                     <label for="xray_details" class="form-label">X-ray Details</label>
-                    <textarea class="form-control" id="xray_details" name="xray_details" rows="3"><?php echo htmlspecialchars($visit['xray_details']); ?></textarea>
+                    <textarea class="form-control" id="xray_details" name="xray_details" rows="3"><?php echo isset($visit['xray_details']) ? htmlspecialchars($visit['xray_details']) : ''; ?></textarea>
                 </div>
                 
                 <!-- Existing X-ray Images -->
@@ -174,6 +214,7 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                     <label for="xray_file" class="form-label">Add New X-ray Images</label>
                     <input type="file" class="form-control" id="xray_file" name="xray_file">
                     <button type="button" class="btn btn-success mt-2" id="add_image_button">Add Image</button>
+                    <small class="form-text text-muted">You can upload X-ray images.</small>
                 </div>
             </div>
 
@@ -184,26 +225,27 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
             </div>
 
             <div id="test_results_container" style="display: <?php echo ($visit['s_uric_acid'] || $visit['calcium'] || $visit['esr'] || $visit['cholesterol']) ? 'block' : 'none'; ?>;">
+                <label class="form-label">Test Results</label>
                 <div class="mb-3 input-group">
-                    <input type="text" class="form-control" name="s_uric_acid" value="<?php echo htmlspecialchars($visit['s_uric_acid']); ?>" placeholder="S URIC ACID">
-                    <input type="text" class="form-control" name="calcium" value="<?php echo htmlspecialchars($visit['calcium']); ?>" placeholder="CALCIUM">
+                    <input type="text" class="form-control mx-2" name="s_uric_acid" value="<?php echo isset($visit['s_uric_acid']) && $visit['s_uric_acid'] !== null ? htmlspecialchars($visit['s_uric_acid']) : ''; ?>" placeholder="S URIC ACID">
+                    <input type="text" class="form-control" name="calcium" value="<?php echo isset($visit['calcium']) && $visit['calcium'] !== null ? htmlspecialchars($visit['calcium']) : ''; ?>" placeholder="CALCIUM">
                 </div>
                 <div class="mb-3 input-group">
-                    <input type="text" class="form-control" name="esr" value="<?php echo htmlspecialchars($visit['esr']); ?>" placeholder="E.S.R">
-                    <input type="text" class="form-control" name="cholesterol" value="<?php echo htmlspecialchars($visit['cholesterol']); ?>" placeholder="CHOLESTEROL">
+                    <input type="text" class="form-control mx-2" name="esr" value="<?php echo isset($visit['esr']) && $visit['esr'] !== null ? htmlspecialchars($visit['esr']) : ''; ?>" placeholder="E.S.R">
+                    <input type="text" class="form-control" name="cholesterol" value="<?php echo isset($visit['cholesterol']) && $visit['cholesterol'] !== null ? htmlspecialchars($visit['cholesterol']) : ''; ?>" placeholder="CHOLESTEROL">
                 </div>
             </div>
 
             <!-- Fees -->
             <div class="mb-3">
-                <label for="fees" class="form-label">Consultation Fees</label>
-                <input type="number" class="form-control" id="fees" name="fees" value="<?php echo htmlspecialchars($visit['fees']); ?>" required>
+                <h6 for="fees" class="form-label">Consultation Fees</h6>
+                <input type="number" class="form-control" id="fees" name="fees" value="<?php echo isset($visit['fees']) ? htmlspecialchars($visit['fees']) : '0'; ?>" required>
                 <div class="invalid-feedback">Please enter consultation fees.</div>
             </div>
 
             <!-- Medicines Section -->
             <div class="mb-3">
-                <label class="form-label">Medicines Prescribed</label>
+                <h6 class="form-label">Medicines Prescribed</h6>
                 
                 <!-- Medicine Search and Add -->
                 <div class="input-group mb-3">
@@ -378,8 +420,6 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 saveVisitBtn.disabled = true;
                 saveVisitBtn.textContent = 'Saving...';
                 
-                // Show loading message
-                formStatus.innerHTML = '<div class="alert alert-info">Submitting form...</div>';
                 
                 // Create form data
                 const formData = new FormData(visitForm);
@@ -423,6 +463,7 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 formData.append('xray_file', file);
                 formData.append('visit_id', '<?php echo $visit_id; ?>');
                 formData.append('patient_id', '<?php echo $patient_id; ?>');
+                formData.append('keep_xray_checked', true); // Add flag to maintain checkbox state
                 
                 fetch('uploadImage.php', {
                     method: 'POST',
@@ -431,7 +472,41 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        // Update the xray_taken field in the database to ensure X-ray checkbox stays checked
+                        fetch('updateVisit.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: 'visit_id=<?php echo $visit_id; ?>&patient_id=<?php echo $patient_id; ?>&xray=1'
+                        })
+                        .then(() => {
+                            // Reload only the X-ray images section without refreshing the whole page
+                            fetch('getXrayImages.php?visit_id=<?php echo $visit_id; ?>')
+                            .then(response => response.text())
+                            .then(html => {
+                                const xrayContainer = document.querySelector('.xray-cont');
+                                if (xrayContainer) {
+                                    xrayContainer.innerHTML = html;
+                                    // Reattach delete event listeners
+                                    document.querySelectorAll('.delete-xray-btn').forEach(button => {
+                                        button.addEventListener('click', function() {
+                                            const imageId = this.getAttribute('data-image-id');
+                                            const visitId = this.getAttribute('data-visit-id');
+                                            deleteXrayImage(imageId, visitId);
+                                        });
+                                    });
+                                }
+                                // Clear the file input
+                                fileInput.value = '';
+                            })
+                            .catch(error => {
+                                console.error('Error loading X-ray images:', error);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error updating X-ray status:', error);
+                        });
                     } else {
                         alert('Image upload failed: ' + (data.message || 'Unknown error'));
                     }
@@ -461,7 +536,20 @@ $xray_images = $xray_result->fetch_all(MYSQLI_ASSOC);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        // Remove the deleted image from the DOM instead of reloading
+                        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`).closest('.xray-image');
+                        if (imageElement) {
+                            imageElement.remove();
+                        }
+                        
+                        // If no images remain and no details, hide the X-ray section only if user wants to
+                        if (data.remaining_count === 0 && !document.getElementById('xray_details').value.trim()) {
+                            // Don't automatically uncheck - ask the user instead
+                            if (confirm('No X-ray images or details remain. Would you like to uncheck the X-ray option?')) {
+                                document.getElementById('xray_checkbox').checked = false;
+                                toggleXrayDetails();
+                            }
+                        }
                     } else {
                         alert('Failed to delete the image: ' + (data.message || 'Unknown error'));
                     }

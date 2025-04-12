@@ -79,6 +79,54 @@ $conn->close();
         .back-button {
             margin-top: 20px;
         }
+        
+        /* Responsive styles for small screens */
+        @media (max-width: 768px) {
+            .visit-personal {
+                height: auto;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .test-result {
+                flex-direction: column;
+            }
+            
+            .test-cell {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .card-body.d-flex {
+                flex-wrap: wrap;
+            }
+            
+            .treatment-options-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .treat-cell {
+                margin-bottom: 10px;
+                margin-right: 5px;
+            }
+            
+            /* Allergic Medicine modal responsiveness */
+            .modal-dialog {
+                margin: 10px;
+            }
+            
+            .allergic-form .input-group {
+                flex-direction: column;
+            }
+            
+            .allergic-form .input-group input,
+            .allergic-form .input-group button {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 
@@ -163,9 +211,11 @@ $conn->close();
                 <div class="visit-card">
                     <div class="visit-card-head">Treatment Options</div>
                     <hr>
-                    <div class="card-body d-flex">
+                    <div class="card-body d-flex treatment-options-container">
                         <?php foreach (explode(",", $visit['treatment_options']) as $option): ?>
-                            <li class="treat-cell"><?php echo htmlspecialchars(trim($option)); ?></li>
+                            <?php if(trim($option) !== ""): ?>
+                                <li class="treat-cell"><?php echo htmlspecialchars(trim($option)); ?></li>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 </div>

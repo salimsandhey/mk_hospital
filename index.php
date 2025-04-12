@@ -72,7 +72,15 @@ if ($yesterdaysEarnings > 0) {
 
     <div class="welcome container-fix d-flex justify-content-between">
         <div>
-            <h3>Welcome, <span class="d-name"><?php echo $_SESSION['name'] ?></span></h3>
+            <h3>Welcome, <span class="d-name"><?php 
+                if (isset($_SESSION['name']) && $_SESSION['name'] !== '' && $_SESSION['name'] !== 'demo') {
+                    echo $_SESSION['name'];
+                } elseif (isset($_SESSION['username'])) {
+                    echo $_SESSION['username'];
+                } else {
+                    echo 'User';
+                }
+            ?></span></h3>
             <p>Have a nice day at work</p>
         </div>
     </div>
